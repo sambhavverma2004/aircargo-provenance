@@ -1,0 +1,364 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 2 1
+    bytecblock 0x7c "cfl" 0x151f7c75
+    // smart_contracts/conflict_registry/contract.py:5
+    // class ConflictRegistry(ARC4Contract):
+    txn NumAppArgs
+    bz main___algopy_default_create@11
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0xf51905f6 0x59568dd9 // method "report_conflict(string,string,string,string,string,byte[])string", method "resolve_conflict(string,string,string)string"
+    txna ApplicationArgs 0
+    match report_conflict resolve_conflict
+    err
+
+main___algopy_default_create@11:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// smart_contracts.conflict_registry.contract.ConflictRegistry.report_conflict[routing]() -> void:
+report_conflict:
+    // smart_contracts/conflict_registry/contract.py:10
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 3
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 4
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 5
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 6
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/conflict_registry/contract.py:20
+    // assert conflict_id, "Conflict ID cannot be empty"
+    dig 5
+    len
+    assert // Conflict ID cannot be empty
+    // smart_contracts/conflict_registry/contract.py:21
+    // assert shipment_id, "Shipment ID cannot be empty"
+    dig 4
+    len
+    assert // Shipment ID cannot be empty
+    // smart_contracts/conflict_registry/contract.py:22
+    // assert event_a_id, "First event ID cannot be empty"
+    dig 3
+    len
+    assert // First event ID cannot be empty
+    // smart_contracts/conflict_registry/contract.py:23
+    // assert event_b_id, "Second event ID cannot be empty"
+    dig 2
+    len
+    assert // Second event ID cannot be empty
+    // smart_contracts/conflict_registry/contract.py:24
+    // assert event_a_id != event_b_id, "Events must be different"
+    dig 3
+    dig 3
+    !=
+    assert // Events must be different
+    // smart_contracts/conflict_registry/contract.py:25
+    // assert evidence_hash, "Evidence hash cannot be empty"
+    dup
+    len
+    assert // Evidence hash cannot be empty
+    // smart_contracts/conflict_registry/contract.py:26
+    // assert conflict_id not in self.conflicts, "Conflict already exists"
+    bytec_1 // "cfl"
+    dig 6
+    concat
+    dup
+    box_len
+    bury 1
+    !
+    assert // Conflict already exists
+    // smart_contracts/conflict_registry/contract.py:29-30
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    uncover 5
+    // smart_contracts/conflict_registry/contract.py:30
+    // + Bytes(b"|")
+    bytec_0 // 0x7c
+    // smart_contracts/conflict_registry/contract.py:29-30
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/conflict_registry/contract.py:29-31
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_a_id.bytes
+    uncover 5
+    concat
+    // smart_contracts/conflict_registry/contract.py:32
+    // + Bytes(b"|")
+    bytec_0 // 0x7c
+    // smart_contracts/conflict_registry/contract.py:29-32
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_a_id.bytes
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/conflict_registry/contract.py:29-33
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_a_id.bytes
+    // + Bytes(b"|")
+    // + event_b_id.bytes
+    uncover 4
+    concat
+    // smart_contracts/conflict_registry/contract.py:34
+    // + Bytes(b"|")
+    bytec_0 // 0x7c
+    // smart_contracts/conflict_registry/contract.py:29-34
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_a_id.bytes
+    // + Bytes(b"|")
+    // + event_b_id.bytes
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/conflict_registry/contract.py:29-35
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_a_id.bytes
+    // + Bytes(b"|")
+    // + event_b_id.bytes
+    // + Bytes(b"|")
+    // + reason.bytes
+    uncover 3
+    concat
+    // smart_contracts/conflict_registry/contract.py:36
+    // + Bytes(b"|OPEN|")
+    pushbytes 0x7c4f50454e7c
+    // smart_contracts/conflict_registry/contract.py:29-36
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_a_id.bytes
+    // + Bytes(b"|")
+    // + event_b_id.bytes
+    // + Bytes(b"|")
+    // + reason.bytes
+    // + Bytes(b"|OPEN|")
+    concat
+    // smart_contracts/conflict_registry/contract.py:29-37
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_a_id.bytes
+    // + Bytes(b"|")
+    // + event_b_id.bytes
+    // + Bytes(b"|")
+    // + reason.bytes
+    // + Bytes(b"|OPEN|")
+    // + evidence_hash
+    uncover 2
+    concat
+    // smart_contracts/conflict_registry/contract.py:40
+    // self.conflicts[conflict_id] = record
+    dig 1
+    box_del
+    pop
+    box_put
+    // smart_contracts/conflict_registry/contract.py:41
+    // return "Conflict reported: " + conflict_id
+    pushbytes "Conflict reported: "
+    swap
+    concat
+    // smart_contracts/conflict_registry/contract.py:10
+    // @abimethod()
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_2 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+
+// smart_contracts.conflict_registry.contract.ConflictRegistry.resolve_conflict[routing]() -> void:
+resolve_conflict:
+    // smart_contracts/conflict_registry/contract.py:43
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 3
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/conflict_registry/contract.py:50
+    // assert conflict_id in self.conflicts, "Conflict does not exist"
+    bytec_1 // "cfl"
+    dig 3
+    concat
+    dup
+    box_len
+    bury 1
+    assert // Conflict does not exist
+    // smart_contracts/conflict_registry/contract.py:51
+    // assert resolution, "Resolution cannot be empty"
+    dig 2
+    len
+    assert // Resolution cannot be empty
+    // smart_contracts/conflict_registry/contract.py:52
+    // assert resolved_by, "Resolver cannot be empty"
+    dig 1
+    len
+    assert // Resolver cannot be empty
+    // smart_contracts/conflict_registry/contract.py:54
+    // existing_record = self.conflicts[conflict_id]
+    dup
+    box_get
+    pop
+    // smart_contracts/conflict_registry/contract.py:57
+    // + Bytes(b"|RESOLVED|")
+    pushbytes 0x7c5245534f4c5645447c
+    // smart_contracts/conflict_registry/contract.py:56-57
+    // existing_record
+    // + Bytes(b"|RESOLVED|")
+    concat
+    // smart_contracts/conflict_registry/contract.py:56-58
+    // existing_record
+    // + Bytes(b"|RESOLVED|")
+    // + resolution.bytes
+    uncover 3
+    concat
+    // smart_contracts/conflict_registry/contract.py:59
+    // + Bytes(b"|")
+    bytec_0 // 0x7c
+    // smart_contracts/conflict_registry/contract.py:56-59
+    // existing_record
+    // + Bytes(b"|RESOLVED|")
+    // + resolution.bytes
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/conflict_registry/contract.py:56-60
+    // existing_record
+    // + Bytes(b"|RESOLVED|")
+    // + resolution.bytes
+    // + Bytes(b"|")
+    // + resolved_by.bytes
+    uncover 2
+    concat
+    // smart_contracts/conflict_registry/contract.py:63
+    // self.conflicts[conflict_id] = updated_record
+    dig 1
+    box_del
+    pop
+    box_put
+    // smart_contracts/conflict_registry/contract.py:64
+    // return "Conflict resolved: " + conflict_id
+    pushbytes "Conflict resolved: "
+    swap
+    concat
+    // smart_contracts/conflict_registry/contract.py:43
+    // @abimethod()
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_2 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return

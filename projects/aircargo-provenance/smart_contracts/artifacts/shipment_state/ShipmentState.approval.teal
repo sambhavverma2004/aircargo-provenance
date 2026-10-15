@@ -1,0 +1,205 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 2 1
+    bytecblock "shp" 0x43524541544544 0x5245434549564544 0x4c4f41444544 0x4445504152544544 0x41525249564544
+    // smart_contracts/shipment_state/contract.py:5
+    // class ShipmentState(ARC4Contract):
+    txn NumAppArgs
+    bz main___algopy_default_create@11
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0xfbd74d28 0x37967d26 // method "create_shipment(string)string", method "advance_shipment(string,string)string"
+    txna ApplicationArgs 0
+    match create_shipment advance_shipment
+    err
+
+main___algopy_default_create@11:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// smart_contracts.shipment_state.contract.ShipmentState.create_shipment[routing]() -> void:
+create_shipment:
+    // smart_contracts/shipment_state/contract.py:10
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/shipment_state/contract.py:12
+    // assert shipment_id, "Shipment ID cannot be empty"
+    dup
+    len
+    assert // Shipment ID cannot be empty
+    // smart_contracts/shipment_state/contract.py:13
+    // assert shipment_id not in self.shipments, "Shipment already exists"
+    bytec_0 // "shp"
+    swap
+    concat
+    dup
+    box_len
+    bury 1
+    !
+    assert // Shipment already exists
+    // smart_contracts/shipment_state/contract.py:15
+    // self.shipments[shipment_id] = Bytes(b"CREATED")
+    dup
+    box_del
+    pop
+    bytec_1 // 0x43524541544544
+    box_put
+    // smart_contracts/shipment_state/contract.py:10
+    // @abimethod()
+    pushbytes 0x151f7c750010536869706d656e742063726561746564
+    log
+    intc_2 // 1
+    return
+
+
+// smart_contracts.shipment_state.contract.ShipmentState.advance_shipment[routing]() -> void:
+advance_shipment:
+    // smart_contracts/shipment_state/contract.py:18
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    swap
+    // smart_contracts/shipment_state/contract.py:24
+    // assert shipment_id in self.shipments, "Shipment does not exist"
+    bytec_0 // "shp"
+    swap
+    concat
+    dupn 2
+    box_len
+    bury 1
+    assert // Shipment does not exist
+    // smart_contracts/shipment_state/contract.py:26
+    // current_state = self.shipments[shipment_id]
+    box_get
+    pop
+    dup
+    // smart_contracts/shipment_state/contract.py:28
+    // if current_state == Bytes(b"CREATED"):
+    bytec_1 // 0x43524541544544
+    ==
+    bz advance_shipment_else_body@3
+    pop
+    // smart_contracts/shipment_state/contract.py:29
+    // assert new_state == String("RECEIVED"), "Invalid transition"
+    dig 1
+    bytec_2 // "RECEIVED"
+    ==
+    assert // Invalid transition
+
+advance_shipment_after_if_else@16:
+    // smart_contracts/shipment_state/contract.py:41
+    // self.shipments[shipment_id] = new_state.bytes
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // smart_contracts/shipment_state/contract.py:18
+    // @abimethod()
+    pushbytes 0x151f7c750016536869706d656e742073746174652075706461746564
+    log
+    intc_2 // 1
+    return
+
+advance_shipment_else_body@3:
+    // smart_contracts/shipment_state/contract.py:30
+    // elif current_state == Bytes(b"RECEIVED"):
+    dup
+    bytec_2 // 0x5245434549564544
+    ==
+    bz advance_shipment_else_body@5
+    pop
+    // smart_contracts/shipment_state/contract.py:31
+    // assert new_state == String("LOADED"), "Invalid transition"
+    dig 1
+    bytec_3 // "LOADED"
+    ==
+    assert // Invalid transition
+    b advance_shipment_after_if_else@16
+
+advance_shipment_else_body@5:
+    // smart_contracts/shipment_state/contract.py:32
+    // elif current_state == Bytes(b"LOADED"):
+    dup
+    bytec_3 // 0x4c4f41444544
+    ==
+    bz advance_shipment_else_body@7
+    pop
+    // smart_contracts/shipment_state/contract.py:33
+    // assert new_state == String("DEPARTED"), "Invalid transition"
+    dig 1
+    bytec 4 // "DEPARTED"
+    ==
+    assert // Invalid transition
+    b advance_shipment_after_if_else@16
+
+advance_shipment_else_body@7:
+    // smart_contracts/shipment_state/contract.py:34
+    // elif current_state == Bytes(b"DEPARTED"):
+    dup
+    bytec 4 // 0x4445504152544544
+    ==
+    bz advance_shipment_else_body@9
+    pop
+    // smart_contracts/shipment_state/contract.py:35
+    // assert new_state == String("ARRIVED"), "Invalid transition"
+    dig 1
+    bytec 5 // "ARRIVED"
+    ==
+    assert // Invalid transition
+    b advance_shipment_after_if_else@16
+
+advance_shipment_else_body@9:
+    // smart_contracts/shipment_state/contract.py:36
+    // elif current_state == Bytes(b"ARRIVED"):
+    bytec 5 // 0x41525249564544
+    ==
+    assert // Shipment is already delivered or state is invalid
+    // smart_contracts/shipment_state/contract.py:37
+    // assert new_state == String("DELIVERED"), "Invalid transition"
+    dig 1
+    pushbytes "DELIVERED"
+    ==
+    assert // Invalid transition
+    b advance_shipment_after_if_else@16

@@ -10,8 +10,9 @@ package-mode = false
 python = "^3.12"
 algokit-utils = "^4.0.0"
 python-dotenv = "^1.0.0"
-algorand-python = "^3"
-algorand-python-testing = "^1"
+algorand-python = ">=4.0.0,<4.1.0"
+fastapi = "^0.143.1"
+uvicorn = "^0.54.0"
 
 [tool.poetry.group.dev.dependencies]
 algokit-client-generator = "^2.1.0"

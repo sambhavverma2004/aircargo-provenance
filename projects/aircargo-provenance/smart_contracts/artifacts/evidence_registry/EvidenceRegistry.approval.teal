@@ -1,0 +1,243 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 2 1 32
+    bytecblock "evd" 0x7c
+    // smart_contracts/evidence_registry/contract.py:5
+    // class EvidenceRegistry(ARC4Contract):
+    txn NumAppArgs
+    bz main___algopy_default_create@11
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0x2fe7dac5 0x87384178 // method "register_evidence(string,string,byte[],string)string", method "verify_evidence(string,byte[])string"
+    txna ApplicationArgs 0
+    match register_evidence verify_evidence
+    err
+
+main___algopy_default_create@11:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// smart_contracts.evidence_registry.contract.EvidenceRegistry.register_evidence[routing]() -> void:
+register_evidence:
+    // smart_contracts/evidence_registry/contract.py:10
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 3
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 4
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/evidence_registry/contract.py:18
+    // assert evidence_id, "Evidence ID cannot be empty"
+    dig 3
+    len
+    assert // Evidence ID cannot be empty
+    // smart_contracts/evidence_registry/contract.py:19
+    // assert shipment_id, "Shipment ID cannot be empty"
+    dig 2
+    len
+    assert // Shipment ID cannot be empty
+    // smart_contracts/evidence_registry/contract.py:20
+    // assert evidence_hash, "Evidence hash cannot be empty"
+    dig 1
+    len
+    assert // Evidence hash cannot be empty
+    // smart_contracts/evidence_registry/contract.py:21
+    // assert submitted_by, "Submitter cannot be empty"
+    dup
+    len
+    assert // Submitter cannot be empty
+    // smart_contracts/evidence_registry/contract.py:22
+    // assert evidence_id not in self.evidence, "Evidence already registered"
+    bytec_0 // "evd"
+    uncover 4
+    concat
+    dup
+    box_len
+    bury 1
+    !
+    assert // Evidence already registered
+    // smart_contracts/evidence_registry/contract.py:27-28
+    // evidence_hash
+    // + Bytes(b"|")
+    uncover 2
+    // smart_contracts/evidence_registry/contract.py:28
+    // + Bytes(b"|")
+    bytec_1 // 0x7c
+    // smart_contracts/evidence_registry/contract.py:27-28
+    // evidence_hash
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/evidence_registry/contract.py:27-29
+    // evidence_hash
+    // + Bytes(b"|")
+    // + shipment_id.bytes
+    uncover 3
+    concat
+    // smart_contracts/evidence_registry/contract.py:30
+    // + Bytes(b"|")
+    bytec_1 // 0x7c
+    // smart_contracts/evidence_registry/contract.py:27-30
+    // evidence_hash
+    // + Bytes(b"|")
+    // + shipment_id.bytes
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/evidence_registry/contract.py:27-31
+    // evidence_hash
+    // + Bytes(b"|")
+    // + shipment_id.bytes
+    // + Bytes(b"|")
+    // + submitted_by.bytes
+    uncover 2
+    concat
+    // smart_contracts/evidence_registry/contract.py:34
+    // self.evidence[evidence_id] = record
+    dig 1
+    box_del
+    pop
+    box_put
+    // smart_contracts/evidence_registry/contract.py:10
+    // @abimethod()
+    pushbytes 0x151f7c75001345766964656e63652072656769737465726564
+    log
+    intc_2 // 1
+    return
+
+
+// smart_contracts.evidence_registry.contract.EvidenceRegistry.verify_evidence[routing]() -> void:
+verify_evidence:
+    // smart_contracts/evidence_registry/contract.py:37
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/evidence_registry/contract.py:43
+    // assert evidence_id in self.evidence, "Evidence does not exist"
+    bytec_0 // "evd"
+    uncover 2
+    concat
+    dup
+    box_len
+    assert // Evidence does not exist
+    // smart_contracts/evidence_registry/contract.py:46
+    // stored_hash = record[0:32]
+    intc_0 // 0
+    dig 1
+    >=
+    intc_0 // 0
+    dig 2
+    uncover 2
+    select
+    intc_3 // 32
+    dig 2
+    >=
+    intc_3 // 32
+    uncover 3
+    uncover 2
+    select
+    // smart_contracts/evidence_registry/contract.py:45-46
+    // record = self.evidence[evidence_id]
+    // stored_hash = record[0:32]
+    dig 1
+    -
+    box_extract
+    // smart_contracts/evidence_registry/contract.py:48
+    // if stored_hash == submitted_hash:
+    ==
+    bz verify_evidence_after_if_else@3
+    // smart_contracts/evidence_registry/contract.py:49
+    // return String("Evidence hash matches")
+    pushbytes "Evidence hash matches"
+
+verify_evidence_after_inlined_smart_contracts.evidence_registry.contract.EvidenceRegistry.verify_evidence@4:
+    // smart_contracts/evidence_registry/contract.py:37
+    // @abimethod()
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+verify_evidence_after_if_else@3:
+    // smart_contracts/evidence_registry/contract.py:50
+    // return String("Evidence hash mismatch")
+    pushbytes "Evidence hash mismatch"
+    // smart_contracts/evidence_registry/contract.py:37
+    // @abimethod()
+    b verify_evidence_after_inlined_smart_contracts.evidence_registry.contract.EvidenceRegistry.verify_evidence@4

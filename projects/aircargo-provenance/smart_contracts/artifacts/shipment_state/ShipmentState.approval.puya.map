@@ -1,0 +1,1394 @@
+{
+  "version": 3,
+  "sources": [
+    "../../../contract.py"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAIA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;AAAA;;;AAAA;;;;;;AAAA;;;;;;;;;AAKK;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAEU;AAAA;AAAP;AAC0B;AAAnB;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAP;AAEA;AAAA;;AAA8B;AAA9B;AALH;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAQA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAMyB;AAAf;AAAA;AAAA;;AAAA;AAAA;;AAAP;AAEgB;AAAA;AAAA;AAEI;AAAjB;AAAX;;;;AACmB;;AAAa;AAAb;AAAP;AAYJ;AAAA;;AAAA;AAAA;AAvBH;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAYQ;AAAiB;AAAjB;AAAb;;;;AACmB;;AAAa;AAAb;AAAP;;;;AACC;AAAiB;AAAjB;AAAb;;;;AACmB;;AAAa;;AAAb;AAAP;;;;AACC;AAAiB;;AAAjB;AAAb;;;;AACmB;;AAAa;;AAAb;AAAP;;;;AACkB;;AAAjB;AAAb;AACmB;;AAAa;;;;;;;;;;;AAAb;AAAP;",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "algopy.arc4.ARC4Contract.approval_program",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 0 2 1"
+    },
+    "6": {
+      "op": "bytecblock \"shp\" 0x43524541544544 0x5245434549564544 0x4c4f41444544 0x4445504152544544 0x41525249564544"
+    },
+    "53": {
+      "op": "txn NumAppArgs",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "55": {
+      "op": "bz main___algopy_default_create@11",
+      "stack_out": []
+    },
+    "58": {
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "60": {
+      "op": "!",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "61": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "62": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "64": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "65": {
+      "op": "pushbytess 0xfbd74d28 0x37967d26 // method \"create_shipment(string)string\", method \"advance_shipment(string,string)string\"",
+      "defined_out": [
+        "Method(advance_shipment(string,string)string)",
+        "Method(create_shipment(string)string)"
+      ],
+      "stack_out": [
+        "Method(create_shipment(string)string)",
+        "Method(advance_shipment(string,string)string)"
+      ]
+    },
+    "77": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(advance_shipment(string,string)string)",
+        "Method(create_shipment(string)string)",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "Method(create_shipment(string)string)",
+        "Method(advance_shipment(string,string)string)",
+        "tmp%6#0"
+      ]
+    },
+    "80": {
+      "op": "match create_shipment advance_shipment",
+      "stack_out": []
+    },
+    "86": {
+      "op": "err"
+    },
+    "87": {
+      "block": "main___algopy_default_create@11",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0"
+      ]
+    },
+    "89": {
+      "op": "!",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0"
+      ]
+    },
+    "90": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ]
+    },
+    "92": {
+      "op": "!",
+      "defined_out": [
+        "tmp%10#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%10#0"
+      ]
+    },
+    "93": {
+      "op": "&&",
+      "defined_out": [
+        "tmp%11#0"
+      ],
+      "stack_out": [
+        "tmp%11#0"
+      ]
+    },
+    "94": {
+      "op": "return",
+      "defined_out": [],
+      "stack_out": []
+    },
+    "95": {
+      "subroutine": "smart_contracts.shipment_state.contract.ShipmentState.create_shipment[routing]",
+      "params": {},
+      "block": "create_shipment",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "98": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "99": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "100": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "101": {
+      "op": "intc_1 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "102": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "103": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "105": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "106": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "107": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "108": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "shipment_id#0"
+      ],
+      "stack_out": [
+        "shipment_id#0"
+      ]
+    },
+    "111": {
+      "op": "dup",
+      "defined_out": [
+        "shipment_id#0",
+        "shipment_id#0 (copy)"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "shipment_id#0 (copy)"
+      ]
+    },
+    "112": {
+      "op": "len",
+      "defined_out": [
+        "shipment_id#0",
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%0#1"
+      ]
+    },
+    "113": {
+      "error": "Shipment ID cannot be empty",
+      "op": "assert // Shipment ID cannot be empty",
+      "stack_out": [
+        "shipment_id#0"
+      ]
+    },
+    "114": {
+      "op": "bytec_0 // \"shp\"",
+      "defined_out": [
+        "\"shp\"",
+        "shipment_id#0"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "\"shp\""
+      ]
+    },
+    "115": {
+      "op": "swap",
+      "stack_out": [
+        "\"shp\"",
+        "shipment_id#0"
+      ]
+    },
+    "116": {
+      "op": "concat",
+      "defined_out": [
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "117": {
+      "op": "dup",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "118": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "119": {
+      "op": "bury 1",
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "121": {
+      "op": "!",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "tmp%2#1"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "tmp%2#1"
+      ]
+    },
+    "122": {
+      "error": "Shipment already exists",
+      "op": "assert // Shipment already exists",
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "123": {
+      "op": "dup",
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "124": {
+      "op": "box_del",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "{box_del}"
+      ]
+    },
+    "125": {
+      "op": "pop",
+      "stack_out": [
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "126": {
+      "op": "bytec_1 // 0x43524541544544",
+      "defined_out": [
+        "0x43524541544544",
+        "map_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "0x43524541544544"
+      ]
+    },
+    "127": {
+      "op": "box_put",
+      "stack_out": []
+    },
+    "128": {
+      "op": "pushbytes 0x151f7c750010536869706d656e742063726561746564",
+      "defined_out": [
+        "0x151f7c750010536869706d656e742063726561746564"
+      ],
+      "stack_out": [
+        "0x151f7c750010536869706d656e742063726561746564"
+      ]
+    },
+    "152": {
+      "op": "log",
+      "stack_out": []
+    },
+    "153": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "154": {
+      "op": "return",
+      "stack_out": []
+    },
+    "155": {
+      "subroutine": "smart_contracts.shipment_state.contract.ShipmentState.advance_shipment[routing]",
+      "params": {},
+      "block": "advance_shipment",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "158": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "159": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "160": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "161": {
+      "op": "intc_1 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "162": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "163": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "165": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "166": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "167": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "168": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "shipment_id#0"
+      ],
+      "stack_out": [
+        "shipment_id#0"
+      ]
+    },
+    "171": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "shipment_id#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0"
+      ]
+    },
+    "174": {
+      "op": "dup",
+      "defined_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "175": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "0"
+      ]
+    },
+    "176": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%1#0",
+        "shipment_id#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "aggregate%array_length%1#0"
+      ]
+    },
+    "177": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "aggregate%array_length%1#0",
+        "2"
+      ]
+    },
+    "178": {
+      "op": "+",
+      "defined_out": [
+        "add%1#0",
+        "shipment_id#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "add%1#0"
+      ]
+    },
+    "179": {
+      "op": "dig 1",
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "add%1#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "181": {
+      "op": "len",
+      "defined_out": [
+        "add%1#0",
+        "len%1#0",
+        "shipment_id#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "add%1#0",
+        "len%1#0"
+      ]
+    },
+    "182": {
+      "op": "==",
+      "defined_out": [
+        "eq%1#0",
+        "shipment_id#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "183": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "shipment_id#0",
+        "tmp%2#0"
+      ]
+    },
+    "184": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "new_state#0",
+        "shipment_id#0"
+      ],
+      "stack_out": [
+        "shipment_id#0",
+        "new_state#0"
+      ]
+    },
+    "187": {
+      "op": "swap",
+      "defined_out": [
+        "new_state#0",
+        "shipment_id#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "shipment_id#0"
+      ]
+    },
+    "188": {
+      "op": "bytec_0 // \"shp\"",
+      "defined_out": [
+        "\"shp\"",
+        "new_state#0",
+        "shipment_id#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "shipment_id#0",
+        "\"shp\""
+      ]
+    },
+    "189": {
+      "op": "swap",
+      "stack_out": [
+        "new_state#0",
+        "\"shp\"",
+        "shipment_id#0"
+      ]
+    },
+    "190": {
+      "op": "concat",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "new_state#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "191": {
+      "op": "dupn 2",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)",
+        "new_state#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "193": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0",
+        "new_state#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "194": {
+      "op": "bury 1",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "196": {
+      "error": "Shipment does not exist",
+      "op": "assert // Shipment does not exist",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "197": {
+      "op": "box_get",
+      "defined_out": [
+        "aggregate%box_get%1#0",
+        "current_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "aggregate%box_get%1#0"
+      ]
+    },
+    "198": {
+      "op": "pop",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ]
+    },
+    "199": {
+      "op": "dup",
+      "defined_out": [
+        "current_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0"
+      ]
+    },
+    "200": {
+      "op": "bytec_1 // 0x43524541544544",
+      "defined_out": [
+        "0x43524541544544",
+        "current_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0",
+        "0x43524541544544"
+      ]
+    },
+    "201": {
+      "op": "==",
+      "defined_out": [
+        "current_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0",
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "tmp%0#1"
+      ]
+    },
+    "202": {
+      "op": "bz advance_shipment_else_body@3",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ]
+    },
+    "205": {
+      "op": "pop",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "206": {
+      "op": "dig 1",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "new_state#0",
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)"
+      ]
+    },
+    "208": {
+      "op": "bytec_2 // \"RECEIVED\"",
+      "defined_out": [
+        "\"RECEIVED\"",
+        "map_prefixed_key%0#0",
+        "new_state#0",
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)",
+        "\"RECEIVED\""
+      ]
+    },
+    "209": {
+      "op": "==",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "new_state#0",
+        "tmp%1#1"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "tmp%1#1"
+      ]
+    },
+    "210": {
+      "error": "Invalid transition",
+      "op": "assert // Invalid transition",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "211": {
+      "block": "advance_shipment_after_if_else@16",
+      "stack_in": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ],
+      "op": "dup",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "map_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "212": {
+      "op": "box_del",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "{box_del}"
+      ]
+    },
+    "213": {
+      "op": "pop",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "214": {
+      "op": "swap",
+      "defined_out": [
+        "map_prefixed_key%0#0",
+        "new_state#0"
+      ],
+      "stack_out": [
+        "map_prefixed_key%0#0",
+        "new_state#0"
+      ]
+    },
+    "215": {
+      "op": "box_put",
+      "stack_out": []
+    },
+    "216": {
+      "op": "pushbytes 0x151f7c750016536869706d656e742073746174652075706461746564",
+      "defined_out": [
+        "0x151f7c750016536869706d656e742073746174652075706461746564"
+      ],
+      "stack_out": [
+        "0x151f7c750016536869706d656e742073746174652075706461746564"
+      ]
+    },
+    "246": {
+      "op": "log",
+      "stack_out": []
+    },
+    "247": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "248": {
+      "op": "return",
+      "stack_out": []
+    },
+    "249": {
+      "block": "advance_shipment_else_body@3",
+      "stack_in": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ],
+      "op": "dup",
+      "defined_out": [
+        "current_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0 (copy)"
+      ]
+    },
+    "250": {
+      "op": "bytec_2 // 0x5245434549564544",
+      "defined_out": [
+        "0x5245434549564544",
+        "current_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0 (copy)",
+        "0x5245434549564544"
+      ]
+    },
+    "251": {
+      "op": "==",
+      "defined_out": [
+        "tmp%2#1"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "tmp%2#1"
+      ]
+    },
+    "252": {
+      "op": "bz advance_shipment_else_body@5",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ]
+    },
+    "255": {
+      "op": "pop",
+      "defined_out": [],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "256": {
+      "op": "dig 1",
+      "defined_out": [
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)"
+      ]
+    },
+    "258": {
+      "op": "bytec_3 // \"LOADED\"",
+      "defined_out": [
+        "\"LOADED\"",
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)",
+        "\"LOADED\""
+      ]
+    },
+    "259": {
+      "op": "==",
+      "defined_out": [
+        "tmp%3#1"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "tmp%3#1"
+      ]
+    },
+    "260": {
+      "error": "Invalid transition",
+      "op": "assert // Invalid transition",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "261": {
+      "op": "b advance_shipment_after_if_else@16"
+    },
+    "264": {
+      "block": "advance_shipment_else_body@5",
+      "stack_in": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ],
+      "op": "dup",
+      "defined_out": [
+        "current_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0 (copy)"
+      ]
+    },
+    "265": {
+      "op": "bytec_3 // 0x4c4f41444544",
+      "defined_out": [
+        "0x4c4f41444544",
+        "current_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0 (copy)",
+        "0x4c4f41444544"
+      ]
+    },
+    "266": {
+      "op": "==",
+      "defined_out": [
+        "tmp%4#1"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "tmp%4#1"
+      ]
+    },
+    "267": {
+      "op": "bz advance_shipment_else_body@7",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ]
+    },
+    "270": {
+      "op": "pop",
+      "defined_out": [],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "271": {
+      "op": "dig 1",
+      "defined_out": [
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)"
+      ]
+    },
+    "273": {
+      "op": "bytec 4 // \"DEPARTED\"",
+      "defined_out": [
+        "\"DEPARTED\"",
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)",
+        "\"DEPARTED\""
+      ]
+    },
+    "275": {
+      "op": "==",
+      "defined_out": [
+        "tmp%5#1"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "tmp%5#1"
+      ]
+    },
+    "276": {
+      "error": "Invalid transition",
+      "op": "assert // Invalid transition",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "277": {
+      "op": "b advance_shipment_after_if_else@16"
+    },
+    "280": {
+      "block": "advance_shipment_else_body@7",
+      "stack_in": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ],
+      "op": "dup",
+      "defined_out": [
+        "current_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0 (copy)"
+      ]
+    },
+    "281": {
+      "op": "bytec 4 // 0x4445504152544544",
+      "defined_out": [
+        "0x4445504152544544",
+        "current_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "current_state#0 (copy)",
+        "0x4445504152544544"
+      ]
+    },
+    "283": {
+      "op": "==",
+      "defined_out": [
+        "tmp%6#1"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "tmp%6#1"
+      ]
+    },
+    "284": {
+      "op": "bz advance_shipment_else_body@9",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ]
+    },
+    "287": {
+      "op": "pop",
+      "defined_out": [],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "288": {
+      "op": "dig 1",
+      "defined_out": [
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)"
+      ]
+    },
+    "290": {
+      "op": "bytec 5 // \"ARRIVED\"",
+      "defined_out": [
+        "\"ARRIVED\"",
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)",
+        "\"ARRIVED\""
+      ]
+    },
+    "292": {
+      "op": "==",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "tmp%7#0"
+      ]
+    },
+    "293": {
+      "error": "Invalid transition",
+      "op": "assert // Invalid transition",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "294": {
+      "op": "b advance_shipment_after_if_else@16"
+    },
+    "297": {
+      "block": "advance_shipment_else_body@9",
+      "stack_in": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0"
+      ],
+      "op": "bytec 5 // 0x41525249564544",
+      "defined_out": [
+        "0x41525249564544",
+        "current_state#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "current_state#0",
+        "0x41525249564544"
+      ]
+    },
+    "299": {
+      "op": "==",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "tmp%8#0"
+      ]
+    },
+    "300": {
+      "error": "Shipment is already delivered or state is invalid",
+      "op": "assert // Shipment is already delivered or state is invalid",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "301": {
+      "op": "dig 1",
+      "defined_out": [
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)"
+      ]
+    },
+    "303": {
+      "op": "pushbytes \"DELIVERED\"",
+      "defined_out": [
+        "\"DELIVERED\"",
+        "new_state#0 (copy)"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "new_state#0 (copy)",
+        "\"DELIVERED\""
+      ]
+    },
+    "314": {
+      "op": "==",
+      "defined_out": [
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0",
+        "tmp%9#0"
+      ]
+    },
+    "315": {
+      "error": "Invalid transition",
+      "op": "assert // Invalid transition",
+      "stack_out": [
+        "new_state#0",
+        "map_prefixed_key%0#0"
+      ]
+    },
+    "316": {
+      "op": "b advance_shipment_after_if_else@16"
+    }
+  }
+}

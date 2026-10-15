@@ -1,0 +1,181 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 2
+    // smart_contracts/hello_world/contract.py:5
+    // class AirCargoProvenance(ARC4Contract):
+    txn NumAppArgs
+    bz main___algopy_default_create@7
+    pushbytes 0xba9da0c0 // method "record_event(string,string,string,uint64,string,byte[])string"
+    txna ApplicationArgs 0
+    match main_record_event_route@5
+    err
+
+main_record_event_route@5:
+    // smart_contracts/hello_world/contract.py:10
+    // @abimethod()
+    txn OnCompletion
+    !
+    txn ApplicationID
+    &&
+    assert
+    b record_event
+
+main___algopy_default_create@7:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// smart_contracts.hello_world.contract.AirCargoProvenance.record_event[routing]() -> void:
+record_event:
+    // smart_contracts/hello_world/contract.py:10
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 3
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 4
+    len
+    pushint 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    txna ApplicationArgs 5
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    swap
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    txna ApplicationArgs 6
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/hello_world/contract.py:20
+    // assert event_id, "Event ID cannot be empty"
+    dig 3
+    len
+    assert // Event ID cannot be empty
+    // smart_contracts/hello_world/contract.py:21
+    // assert shipment_id, "Shipment ID cannot be empty"
+    dig 2
+    len
+    assert // Shipment ID cannot be empty
+    // smart_contracts/hello_world/contract.py:22
+    // assert event_hash, "Event hash cannot be empty"
+    dup
+    len
+    assert // Event hash cannot be empty
+    // smart_contracts/hello_world/contract.py:23
+    // assert event_id not in self.events, "Event ID already exists"
+    pushbytes "evt"
+    dig 4
+    concat
+    dup
+    box_len
+    bury 1
+    !
+    assert // Event ID already exists
+    // smart_contracts/hello_world/contract.py:26-27
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    uncover 3
+    // smart_contracts/hello_world/contract.py:27
+    // + Bytes(b"|")
+    pushbytes 0x7c
+    // smart_contracts/hello_world/contract.py:26-27
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/hello_world/contract.py:26-28
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_type.bytes
+    uncover 3
+    concat
+    // smart_contracts/hello_world/contract.py:29
+    // + Bytes(b"|")
+    pushbytes 0x7c
+    // smart_contracts/hello_world/contract.py:26-29
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_type.bytes
+    // + Bytes(b"|")
+    concat
+    // smart_contracts/hello_world/contract.py:26-30
+    // shipment_id.bytes
+    // + Bytes(b"|")
+    // + event_type.bytes
+    // + Bytes(b"|")
+    // + event_hash
+    uncover 2
+    concat
+    // smart_contracts/hello_world/contract.py:33
+    // self.events[event_id] = record
+    dig 1
+    box_del
+    pop
+    box_put
+    // smart_contracts/hello_world/contract.py:34
+    // return "Event recorded: " + event_id
+    pushbytes "Event recorded: "
+    swap
+    concat
+    // smart_contracts/hello_world/contract.py:10
+    // @abimethod()
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    pushint 1
+    return
