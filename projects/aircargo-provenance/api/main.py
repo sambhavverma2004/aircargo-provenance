@@ -256,6 +256,43 @@ def get_conflict(conflict_id: str):
 
 
 
+@app.patch("/conflicts/{conflict_id}/resolve")
+def resolve_conflict(conflict_id: str):
+    with connect_db() as conn:
+        row = conn.execute(
+            "SELECT status FROM conflicts WHERE conflict_id = ?",
+            (conflict_id,),
+        ).fetchone()
+
+        if row is None:
+            raise HTTPException(404, "Conflict not found")
+
+        if row["status"] == "RESOLVED":
+            return {
+                "conflictId": conflict_id,
+                "status": "RESOLVED",
+                "message": "Conflict is already resolved",
+            }
+
+        if row["status"] != "OPEN":
+            raise HTTPException(
+                409,
+                f"Cannot resolve conflict with status {row['status']}",
+            )
+
+        conn.execute(
+            "UPDATE conflicts SET status = 'RESOLVED' WHERE conflict_id = ?",
+            (conflict_id,),
+        )
+
+    return {
+        "conflictId": conflict_id,
+        "status": "RESOLVED",
+        "message": "Conflict resolved successfully",
+    }
+
+
+
 @app.get("/conflicts")
 def list_conflicts(status: str | None = None):
     with connect_db() as conn:

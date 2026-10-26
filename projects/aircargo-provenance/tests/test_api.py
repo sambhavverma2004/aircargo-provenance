@@ -95,6 +95,42 @@ def test_get_missing_conflict_returns_404(client):
 
 
 
+def test_resolve_conflict(client):
+    shipment = sample_shipment()
+    client.post("/logistics-objects", json=shipment)
+    duplicate = client.post("/logistics-objects", json=shipment)
+    conflict_id = duplicate.json()["conflictId"]
+
+    response = client.patch(f"/conflicts/{conflict_id}/resolve")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "RESOLVED"
+
+    details = client.get(f"/conflicts/{conflict_id}")
+    assert details.json()["status"] == "RESOLVED"
+
+
+def test_resolving_conflict_twice_is_safe(client):
+    shipment = sample_shipment()
+    client.post("/logistics-objects", json=shipment)
+    duplicate = client.post("/logistics-objects", json=shipment)
+    conflict_id = duplicate.json()["conflictId"]
+
+    first = client.patch(f"/conflicts/{conflict_id}/resolve")
+    second = client.patch(f"/conflicts/{conflict_id}/resolve")
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert second.json()["status"] == "RESOLVED"
+
+
+def test_resolve_missing_conflict_returns_404(client):
+    response = client.patch("/conflicts/nonexistent-id/resolve")
+
+    assert response.status_code == 404
+
+
+
 def test_conflicts_can_be_listed(client):
     payload = sample_shipment()
     client.post("/logistics-objects", json=payload)
