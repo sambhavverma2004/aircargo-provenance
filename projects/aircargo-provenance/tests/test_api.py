@@ -95,6 +95,7 @@ def test_get_missing_conflict_returns_404(client):
 
 
 
+
 def test_resolve_conflict(client):
     shipment = sample_shipment()
     client.post("/logistics-objects", json=shipment)
@@ -107,7 +108,27 @@ def test_resolve_conflict(client):
     assert response.json()["status"] == "RESOLVED"
 
     details = client.get(f"/conflicts/{conflict_id}")
+    assert details.status_code == 200
     assert details.json()["status"] == "RESOLVED"
+
+    # Verify that the resolution was recorded in the audit table.
+    with api.connect_db() as conn:
+        rows = conn.execute(
+            """
+            SELECT conflict_id, action, previous_status,
+                   new_status, recorded_at
+            FROM conflict_audit
+            WHERE conflict_id = ?
+            """,
+            (conflict_id,),
+        ).fetchall()
+
+    assert len(rows) == 1
+    assert rows[0]["conflict_id"] == conflict_id
+    assert rows[0]["action"] == "CONFLICT_RESOLVED"
+    assert rows[0]["previous_status"] == "OPEN"
+    assert rows[0]["new_status"] == "RESOLVED"
+    assert rows[0]["recorded_at"]
 
 
 def test_resolving_conflict_twice_is_safe(client):
@@ -128,6 +149,7 @@ def test_resolve_missing_conflict_returns_404(client):
     response = client.patch("/conflicts/nonexistent-id/resolve")
 
     assert response.status_code == 404
+
 
 
 

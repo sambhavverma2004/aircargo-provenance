@@ -1,4 +1,5 @@
-﻿from contextlib import asynccontextmanager
+﻿
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -32,6 +33,7 @@ async def lifespan(app: FastAPI):
                 created_at TEXT NOT NULL
             )
         """)
+
         conn.execute("""
             CREATE TABLE IF NOT EXISTS conflicts (
                 conflict_id TEXT PRIMARY KEY,
@@ -43,6 +45,20 @@ async def lifespan(app: FastAPI):
                 detected_at TEXT NOT NULL
             )
         """)
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS conflict_audit (
+                audit_id TEXT PRIMARY KEY,
+                conflict_id TEXT NOT NULL,
+                action TEXT NOT NULL,
+                previous_status TEXT NOT NULL,
+                new_status TEXT NOT NULL,
+                recorded_at TEXT NOT NULL,
+                FOREIGN KEY (conflict_id)
+                    REFERENCES conflicts(conflict_id)
+            )
+        """)
+
     yield
 
 
@@ -55,6 +71,16 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+
+def jsonld_response(data, status_code=200):
+    return JSONResponse(
+        content=data,
+        status_code=status_code,
+        media_type=f"application/ld+json; version={API_VERSION}",
+        headers={"Content-Language": "en-US"},
+    )
+
 
 
 def jsonld_response(data, status_code=200):
@@ -280,9 +306,29 @@ def resolve_conflict(conflict_id: str):
                 f"Cannot resolve conflict with status {row['status']}",
             )
 
+        now = datetime.now(timezone.utc).isoformat()
+
         conn.execute(
             "UPDATE conflicts SET status = 'RESOLVED' WHERE conflict_id = ?",
             (conflict_id,),
+        )
+
+        conn.execute(
+            """
+            INSERT INTO conflict_audit (
+                audit_id, conflict_id, action,
+                previous_status, new_status, recorded_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                str(uuid.uuid4()),
+                conflict_id,
+                "CONFLICT_RESOLVED",
+                row["status"],
+                "RESOLVED",
+                now,
+            ),
         )
 
     return {
