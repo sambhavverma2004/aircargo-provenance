@@ -226,3 +226,30 @@ def test_get_missing_logistics_object_returns_404(client):
     )
 
     assert response.status_code == 404
+
+def test_retrieval_uses_jsonld_type_for_legacy_records(client):
+    import json
+    from api import main as api
+
+    shipment = sample_shipment("legacy-type-test")
+    assert client.post("/logistics-objects", json=shipment).status_code == 201
+
+    # Simulate a record written by the older, buggy implementation.
+    with api.connect_db() as conn:
+        conn.execute(
+            "UPDATE logistics_objects SET object_type = ? WHERE object_id = ?",
+            (json.dumps(shipment), shipment["@id"]),
+        )
+
+    item_url = "/logistics-objects/" + shipment["@id"]
+    single = client.get(item_url)
+    listing = client.get("/logistics-objects")
+
+    assert single.status_code == 200
+    assert single.json()["object_type"] == shipment["@type"]
+
+    listed_item = next(
+        item for item in listing.json()["items"]
+        if item["object_id"] == shipment["@id"]
+    )
+    assert listed_item["object_type"] == shipment["@type"]
