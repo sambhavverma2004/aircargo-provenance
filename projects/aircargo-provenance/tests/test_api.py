@@ -143,3 +143,44 @@ def test_database_records_survive_reconnection(client):
 
     assert row is not None
     assert row["object_id"] == payload["@id"]
+
+
+def test_rejects_malformed_json(client):
+    response = client.post(
+        "/logistics-objects",
+        content='{"broken":',
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid JSON request body"
+
+
+def test_rejects_empty_json_object(client):
+    response = client.post("/logistics-objects", json={})
+    assert response.status_code == 422
+
+
+def test_conflict_record_survives_reconnection(client):
+    import api.main as api
+
+    shipment = {
+        "@context": {"@vocab": "https://example.org/aircargo#"},
+        "@id": "https://example.org/shipments/persistence-test",
+        "@type": "Shipment",
+    }
+
+    assert client.post("/logistics-objects", json=shipment).status_code == 201
+    duplicate = client.post("/logistics-objects", json=shipment)
+    assert duplicate.status_code == 409
+
+    conflict_id = duplicate.json()["conflictId"]
+
+    with api.connect_db() as conn:
+        row = conn.execute(
+            "SELECT conflict_id, status FROM conflicts WHERE conflict_id = ?",
+            (conflict_id,),
+        ).fetchone()
+
+    assert row is not None
+    assert row["conflict_id"] == conflict_id
+    assert row["status"] == "OPEN"
