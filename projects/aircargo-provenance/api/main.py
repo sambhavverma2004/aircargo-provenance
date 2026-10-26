@@ -209,7 +209,7 @@ def get_logistics_object(object_id: str):
 
     return {
         "object_id": row["object_id"],
-        "object_type": row["object_type"],
+        "object_type": json.loads(row["payload"])["@type"],
         "created_at": row["created_at"],
         "document": json.loads(row["payload"]),
     }
@@ -229,7 +229,7 @@ def list_logistics_objects():
         "items": [
             {
                 "object_id": row["object_id"],
-                "object_type": row["object_type"],
+                "object_type": json.loads(row["payload"])["@type"],
                 "created_at": row["created_at"],
                 "document": json.loads(row["payload"]),
             }
