@@ -184,3 +184,23 @@ def test_conflict_record_survives_reconnection(client):
     assert row is not None
     assert row["conflict_id"] == conflict_id
     assert row["status"] == "OPEN"
+def test_database_stores_correct_object_type(client):
+    import api.main as api
+
+    shipment = {
+        "@context": {"@vocab": "https://example.org/aircargo#"},
+        "@id": "https://example.org/shipments/type-test",
+        "@type": "Shipment",
+    }
+
+    response = client.post("/logistics-objects", json=shipment)
+    assert response.status_code == 201
+
+    with api.connect_db() as conn:
+        row = conn.execute(
+            "SELECT object_type FROM logistics_objects WHERE object_id = ?",
+            (shipment["@id"],),
+        ).fetchone()
+
+    assert row is not None
+    assert row["object_type"] == '"Shipment"'

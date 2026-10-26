@@ -108,8 +108,6 @@ def health():
 
 @app.post("/logistics-objects", status_code=201)
 async def create_logistics_object(request: Request):
-    # Parse JSON regardless of whether the client sends application/json
-    # or application/ld+json.
     try:
         document = await request.json()
     except Exception:
@@ -143,7 +141,6 @@ async def create_logistics_object(request: Request):
                     now,
                 ),
             )
-
             return jsonld_response(
                 {
                     "@context": {
@@ -177,7 +174,7 @@ async def create_logistics_object(request: Request):
             """,
             (
                 object_id,
-                json.dumps(document, ensure_ascii=False),
+                json.dumps(object_type, ensure_ascii=False),
                 json.dumps(document, ensure_ascii=False),
                 now,
             ),
@@ -194,8 +191,6 @@ async def create_logistics_object(request: Request):
         },
         status_code=201,
     )
-
-
 @app.get("/logistics-objects")
 def list_logistics_objects():
     with connect_db() as conn:
