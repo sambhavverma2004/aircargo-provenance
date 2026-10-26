@@ -204,3 +204,25 @@ def test_database_stores_correct_object_type(client):
 
     assert row is not None
     assert row["object_type"] == '"Shipment"'
+def test_get_logistics_object_by_id(client):
+    payload = sample_shipment("get-by-id-test")
+    created = client.post("/logistics-objects", json=payload)
+    assert created.status_code == 201
+
+    response = client.get(
+        "/logistics-objects/"
+        "https://example.org/logistics-objects/get-by-id-test"
+    )
+
+    assert response.status_code == 200
+    assert response.json()["object_id"] == payload["@id"]
+    assert response.json()["document"]["@type"] == payload["@type"]
+
+
+def test_get_missing_logistics_object_returns_404(client):
+    response = client.get(
+        "/logistics-objects/"
+        "https://example.org/logistics-objects/not-found"
+    )
+
+    assert response.status_code == 404

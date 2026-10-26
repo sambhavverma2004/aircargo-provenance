@@ -191,6 +191,29 @@ async def create_logistics_object(request: Request):
         },
         status_code=201,
     )
+
+@app.get("/logistics-objects/{object_id:path}")
+def get_logistics_object(object_id: str):
+    with connect_db() as conn:
+        row = conn.execute(
+            """
+            SELECT object_id, object_type, payload, created_at
+            FROM logistics_objects
+            WHERE object_id = ?
+            """,
+            (object_id,),
+        ).fetchone()
+
+    if row is None:
+        raise HTTPException(404, "Logistics object not found")
+
+    return {
+        "object_id": row["object_id"],
+        "object_type": row["object_type"],
+        "created_at": row["created_at"],
+        "document": json.loads(row["payload"]),
+    }
+
 @app.get("/logistics-objects")
 def list_logistics_objects():
     with connect_db() as conn:
