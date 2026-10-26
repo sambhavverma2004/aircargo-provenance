@@ -73,6 +73,28 @@ def test_shipment_can_be_listed(client):
     assert payload["@id"] in response.text
 
 
+def test_get_conflict_by_id(client):
+    shipment = sample_shipment()
+    client.post("/logistics-objects", json=shipment)
+    duplicate = client.post("/logistics-objects", json=shipment)
+    conflict_id = duplicate.json()["conflictId"]
+
+    response = client.get(f"/conflicts/{conflict_id}")
+
+    assert response.status_code == 200
+    assert response.json()["conflict_id"] == conflict_id
+    assert response.json()["conflict_type"] == "DUPLICATE_IDENTIFIER"
+    assert response.json()["status"] == "OPEN"
+
+
+def test_get_missing_conflict_returns_404(client):
+    response = client.get("/conflicts/nonexistent-conflict-id")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Conflict not found"
+
+
+
 def test_conflicts_can_be_listed(client):
     payload = sample_shipment()
     client.post("/logistics-objects", json=payload)

@@ -238,6 +238,24 @@ def list_logistics_objects():
     }
 
 
+@app.get("/conflicts/{conflict_id}")
+def get_conflict(conflict_id: str):
+    with connect_db() as conn:
+        row = conn.execute(
+            """
+            SELECT * FROM conflicts
+            WHERE conflict_id = ?
+            """,
+            (conflict_id,),
+        ).fetchone()
+
+    if row is None:
+        raise HTTPException(404, "Conflict not found")
+
+    return dict(row)
+
+
+
 @app.get("/conflicts")
 def list_conflicts(status: str | None = None):
     with connect_db() as conn:
