@@ -62,7 +62,6 @@ def test_duplicate_shipment_opens_conflict(client):
     assert conflict["status"] == "OPEN"
     assert conflict["conflictId"]
 
-
 def test_shipment_can_be_listed(client):
     payload = sample_shipment()
     created = client.post("/logistics-objects", json=payload)

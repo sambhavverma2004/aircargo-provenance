@@ -4,22 +4,22 @@
 // algopy.arc4.ARC4Contract.approval_program() -> uint64:
 main:
     intcblock 0 2 1
-    bytecblock 0x7c "cfl" 0x151f7c75
-    // smart_contracts/conflict_registry/contract.py:5
+    bytecblock 0x7c "cst" 0x151f7c75 "cfl" "OPEN"
+    // smart_contracts/conflict_registry/contract.py:9
     // class ConflictRegistry(ARC4Contract):
     txn NumAppArgs
-    bz main___algopy_default_create@11
+    bz main___algopy_default_create@12
     txn OnCompletion
     !
     assert
     txn ApplicationID
     assert
-    pushbytess 0xf51905f6 0x59568dd9 // method "report_conflict(string,string,string,string,string,byte[])string", method "resolve_conflict(string,string,string)string"
+    pushbytess 0xf51905f6 0x59568dd9 0x65daf421 // method "report_conflict(string,string,string,string,string,byte[])string", method "resolve_conflict(string,string,string)string", method "get_status(string)string"
     txna ApplicationArgs 0
-    match report_conflict resolve_conflict
+    match report_conflict resolve_conflict get_status
     err
 
-main___algopy_default_create@11:
+main___algopy_default_create@12:
     txn OnCompletion
     !
     txn ApplicationID
@@ -30,7 +30,7 @@ main___algopy_default_create@11:
 
 // smart_contracts.conflict_registry.contract.ConflictRegistry.report_conflict[routing]() -> void:
 report_conflict:
-    // smart_contracts/conflict_registry/contract.py:10
+    // smart_contracts/conflict_registry/contract.py:16
     // @abimethod()
     txna ApplicationArgs 1
     dup
@@ -98,40 +98,55 @@ report_conflict:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // smart_contracts/conflict_registry/contract.py:20
+    // smart_contracts/conflict_registry/contract.py:26-28
+    // # Temporary access control until participant roles are defined:
+    // # only the account that deployed the contract may write.
+    // assert Txn.sender == Global.creator_address, "Only the deployer can write"
+    txn Sender
+    global CreatorAddress
+    ==
+    assert // Only the deployer can write
+    // smart_contracts/conflict_registry/contract.py:29
     // assert conflict_id, "Conflict ID cannot be empty"
     dig 5
     len
     assert // Conflict ID cannot be empty
-    // smart_contracts/conflict_registry/contract.py:21
+    // smart_contracts/conflict_registry/contract.py:30
     // assert shipment_id, "Shipment ID cannot be empty"
     dig 4
     len
     assert // Shipment ID cannot be empty
-    // smart_contracts/conflict_registry/contract.py:22
+    // smart_contracts/conflict_registry/contract.py:31
     // assert event_a_id, "First event ID cannot be empty"
     dig 3
     len
     assert // First event ID cannot be empty
-    // smart_contracts/conflict_registry/contract.py:23
+    // smart_contracts/conflict_registry/contract.py:32
     // assert event_b_id, "Second event ID cannot be empty"
     dig 2
     len
     assert // Second event ID cannot be empty
-    // smart_contracts/conflict_registry/contract.py:24
+    // smart_contracts/conflict_registry/contract.py:33
     // assert event_a_id != event_b_id, "Events must be different"
     dig 3
     dig 3
     !=
     assert // Events must be different
-    // smart_contracts/conflict_registry/contract.py:25
-    // assert evidence_hash, "Evidence hash cannot be empty"
+    // smart_contracts/conflict_registry/contract.py:34
+    // assert reason, "Reason cannot be empty"
+    dig 1
+    len
+    assert // Reason cannot be empty
+    // smart_contracts/conflict_registry/contract.py:35
+    // assert evidence_hash.length == HASH_LENGTH, "Evidence hash must be 32 bytes"
     dup
     len
-    assert // Evidence hash cannot be empty
-    // smart_contracts/conflict_registry/contract.py:26
+    pushint 32
+    ==
+    assert // Evidence hash must be 32 bytes
+    // smart_contracts/conflict_registry/contract.py:36
     // assert conflict_id not in self.conflicts, "Conflict already exists"
-    bytec_1 // "cfl"
+    bytec_3 // "cfl"
     dig 6
     concat
     dup
@@ -139,33 +154,33 @@ report_conflict:
     bury 1
     !
     assert // Conflict already exists
-    // smart_contracts/conflict_registry/contract.py:29-30
+    // smart_contracts/conflict_registry/contract.py:39-40
     // shipment_id.bytes
     // + Bytes(b"|")
     uncover 5
-    // smart_contracts/conflict_registry/contract.py:30
+    // smart_contracts/conflict_registry/contract.py:40
     // + Bytes(b"|")
     bytec_0 // 0x7c
-    // smart_contracts/conflict_registry/contract.py:29-30
+    // smart_contracts/conflict_registry/contract.py:39-40
     // shipment_id.bytes
     // + Bytes(b"|")
     concat
-    // smart_contracts/conflict_registry/contract.py:29-31
+    // smart_contracts/conflict_registry/contract.py:39-41
     // shipment_id.bytes
     // + Bytes(b"|")
     // + event_a_id.bytes
     uncover 5
     concat
-    // smart_contracts/conflict_registry/contract.py:32
+    // smart_contracts/conflict_registry/contract.py:42
     // + Bytes(b"|")
     bytec_0 // 0x7c
-    // smart_contracts/conflict_registry/contract.py:29-32
+    // smart_contracts/conflict_registry/contract.py:39-42
     // shipment_id.bytes
     // + Bytes(b"|")
     // + event_a_id.bytes
     // + Bytes(b"|")
     concat
-    // smart_contracts/conflict_registry/contract.py:29-33
+    // smart_contracts/conflict_registry/contract.py:39-43
     // shipment_id.bytes
     // + Bytes(b"|")
     // + event_a_id.bytes
@@ -173,10 +188,10 @@ report_conflict:
     // + event_b_id.bytes
     uncover 4
     concat
-    // smart_contracts/conflict_registry/contract.py:34
+    // smart_contracts/conflict_registry/contract.py:44
     // + Bytes(b"|")
     bytec_0 // 0x7c
-    // smart_contracts/conflict_registry/contract.py:29-34
+    // smart_contracts/conflict_registry/contract.py:39-44
     // shipment_id.bytes
     // + Bytes(b"|")
     // + event_a_id.bytes
@@ -184,7 +199,7 @@ report_conflict:
     // + event_b_id.bytes
     // + Bytes(b"|")
     concat
-    // smart_contracts/conflict_registry/contract.py:29-35
+    // smart_contracts/conflict_registry/contract.py:39-45
     // shipment_id.bytes
     // + Bytes(b"|")
     // + event_a_id.bytes
@@ -194,10 +209,10 @@ report_conflict:
     // + reason.bytes
     uncover 3
     concat
-    // smart_contracts/conflict_registry/contract.py:36
+    // smart_contracts/conflict_registry/contract.py:46
     // + Bytes(b"|OPEN|")
     pushbytes 0x7c4f50454e7c
-    // smart_contracts/conflict_registry/contract.py:29-36
+    // smart_contracts/conflict_registry/contract.py:39-46
     // shipment_id.bytes
     // + Bytes(b"|")
     // + event_a_id.bytes
@@ -207,7 +222,7 @@ report_conflict:
     // + reason.bytes
     // + Bytes(b"|OPEN|")
     concat
-    // smart_contracts/conflict_registry/contract.py:29-37
+    // smart_contracts/conflict_registry/contract.py:39-47
     // shipment_id.bytes
     // + Bytes(b"|")
     // + event_a_id.bytes
@@ -219,18 +234,28 @@ report_conflict:
     // + evidence_hash
     uncover 2
     concat
-    // smart_contracts/conflict_registry/contract.py:40
+    // smart_contracts/conflict_registry/contract.py:50
     // self.conflicts[conflict_id] = record
     dig 1
     box_del
     pop
     box_put
-    // smart_contracts/conflict_registry/contract.py:41
+    // smart_contracts/conflict_registry/contract.py:51
+    // self.status[conflict_id] = String("OPEN")
+    bytec_1 // "cst"
+    dig 1
+    concat
+    dup
+    box_del
+    pop
+    bytec 4 // "OPEN"
+    box_put
+    // smart_contracts/conflict_registry/contract.py:52
     // return "Conflict reported: " + conflict_id
     pushbytes "Conflict reported: "
     swap
     concat
-    // smart_contracts/conflict_registry/contract.py:10
+    // smart_contracts/conflict_registry/contract.py:16
     // @abimethod()
     dup
     len
@@ -248,7 +273,7 @@ report_conflict:
 
 // smart_contracts.conflict_registry.contract.ConflictRegistry.resolve_conflict[routing]() -> void:
 resolve_conflict:
-    // smart_contracts/conflict_registry/contract.py:43
+    // smart_contracts/conflict_registry/contract.py:54
     // @abimethod()
     txna ApplicationArgs 1
     dup
@@ -283,73 +308,143 @@ resolve_conflict:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // smart_contracts/conflict_registry/contract.py:50
+    // smart_contracts/conflict_registry/contract.py:61
+    // assert Txn.sender == Global.creator_address, "Only the deployer can write"
+    txn Sender
+    global CreatorAddress
+    ==
+    assert // Only the deployer can write
+    // smart_contracts/conflict_registry/contract.py:62
     // assert conflict_id in self.conflicts, "Conflict does not exist"
-    bytec_1 // "cfl"
+    bytec_3 // "cfl"
     dig 3
     concat
     dup
     box_len
     bury 1
     assert // Conflict does not exist
-    // smart_contracts/conflict_registry/contract.py:51
-    // assert resolution, "Resolution cannot be empty"
-    dig 2
-    len
-    assert // Resolution cannot be empty
-    // smart_contracts/conflict_registry/contract.py:52
-    // assert resolved_by, "Resolver cannot be empty"
-    dig 1
-    len
-    assert // Resolver cannot be empty
-    // smart_contracts/conflict_registry/contract.py:54
-    // existing_record = self.conflicts[conflict_id]
+    // smart_contracts/conflict_registry/contract.py:63
+    // assert self.status[conflict_id] == String("OPEN"), "Conflict is not open"
+    bytec_1 // "cst"
+    dig 4
+    concat
     dup
     box_get
+    assert // check self.status entry exists
+    bytec 4 // "OPEN"
+    ==
+    assert // Conflict is not open
+    // smart_contracts/conflict_registry/contract.py:64
+    // assert resolution, "Resolution cannot be empty"
+    dig 3
+    len
+    assert // Resolution cannot be empty
+    // smart_contracts/conflict_registry/contract.py:65
+    // assert resolved_by, "Resolver cannot be empty"
+    dig 2
+    len
+    assert // Resolver cannot be empty
+    // smart_contracts/conflict_registry/contract.py:67
+    // existing_record = self.conflicts[conflict_id]
+    dig 1
+    box_get
     pop
-    // smart_contracts/conflict_registry/contract.py:57
+    // smart_contracts/conflict_registry/contract.py:70
     // + Bytes(b"|RESOLVED|")
     pushbytes 0x7c5245534f4c5645447c
-    // smart_contracts/conflict_registry/contract.py:56-57
+    // smart_contracts/conflict_registry/contract.py:69-70
     // existing_record
     // + Bytes(b"|RESOLVED|")
     concat
-    // smart_contracts/conflict_registry/contract.py:56-58
+    // smart_contracts/conflict_registry/contract.py:69-71
     // existing_record
     // + Bytes(b"|RESOLVED|")
     // + resolution.bytes
-    uncover 3
+    uncover 4
     concat
-    // smart_contracts/conflict_registry/contract.py:59
+    // smart_contracts/conflict_registry/contract.py:72
     // + Bytes(b"|")
     bytec_0 // 0x7c
-    // smart_contracts/conflict_registry/contract.py:56-59
+    // smart_contracts/conflict_registry/contract.py:69-72
     // existing_record
     // + Bytes(b"|RESOLVED|")
     // + resolution.bytes
     // + Bytes(b"|")
     concat
-    // smart_contracts/conflict_registry/contract.py:56-60
+    // smart_contracts/conflict_registry/contract.py:69-73
     // existing_record
     // + Bytes(b"|RESOLVED|")
     // + resolution.bytes
     // + Bytes(b"|")
     // + resolved_by.bytes
-    uncover 2
+    uncover 3
     concat
-    // smart_contracts/conflict_registry/contract.py:63
+    // smart_contracts/conflict_registry/contract.py:76
     // self.conflicts[conflict_id] = updated_record
-    dig 1
+    dig 2
     box_del
     pop
+    uncover 2
+    swap
     box_put
-    // smart_contracts/conflict_registry/contract.py:64
+    // smart_contracts/conflict_registry/contract.py:77
+    // self.status[conflict_id] = String("RESOLVED")
+    dup
+    box_del
+    pop
+    pushbytes "RESOLVED"
+    box_put
+    // smart_contracts/conflict_registry/contract.py:78
     // return "Conflict resolved: " + conflict_id
     pushbytes "Conflict resolved: "
     swap
     concat
-    // smart_contracts/conflict_registry/contract.py:43
+    // smart_contracts/conflict_registry/contract.py:54
     // @abimethod()
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_2 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+
+// smart_contracts.conflict_registry.contract.ConflictRegistry.get_status[routing]() -> void:
+get_status:
+    // smart_contracts/conflict_registry/contract.py:80
+    // @abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/conflict_registry/contract.py:82
+    // assert conflict_id in self.status, "Conflict does not exist"
+    bytec_1 // "cst"
+    swap
+    concat
+    dup
+    box_len
+    bury 1
+    assert // Conflict does not exist
+    // smart_contracts/conflict_registry/contract.py:83
+    // return self.status[conflict_id]
+    box_get
+    pop
+    // smart_contracts/conflict_registry/contract.py:80
+    // @abimethod(readonly=True)
     dup
     len
     itob

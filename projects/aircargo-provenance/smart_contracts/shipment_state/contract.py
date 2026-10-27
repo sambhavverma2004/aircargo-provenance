@@ -1,4 +1,4 @@
-﻿from algopy import ARC4Contract, BoxMap, Bytes, String
+﻿from algopy import ARC4Contract, BoxMap, Bytes, Global, String, Txn
 from algopy.arc4 import abimethod
 
 
@@ -9,6 +9,9 @@ class ShipmentState(ARC4Contract):
 
     @abimethod()
     def create_shipment(self, shipment_id: String) -> String:
+        # Temporary access control until participant roles are defined:
+        # only the account that deployed the contract may write.
+        assert Txn.sender == Global.creator_address, "Only the deployer can write"
         assert shipment_id, "Shipment ID cannot be empty"
         assert shipment_id not in self.shipments, "Shipment already exists"
 
@@ -21,6 +24,7 @@ class ShipmentState(ARC4Contract):
         shipment_id: String,
         new_state: String,
     ) -> String:
+        assert Txn.sender == Global.creator_address, "Only the deployer can write"
         assert shipment_id in self.shipments, "Shipment does not exist"
 
         current_state = self.shipments[shipment_id]
