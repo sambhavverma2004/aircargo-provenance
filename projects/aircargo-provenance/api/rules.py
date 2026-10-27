@@ -45,13 +45,37 @@ STATUS_CODE_TO_RANK = {
 }
 
 STATUS_CODE_BASE = "https://onerecord.iata.org/ns/code-lists/StatusCode#"
+PARTICIPANT_BASE = "https://onerecord.iata.org/ns/code-lists/ParticipantIdentifier#"
 CARGO_NS = "https://onerecord.iata.org/ns/cargo#"
+
+# Prototype-only properties (not part of ONE Record) use this prefix.
+ACP_NS = "https://aircargo-provenance.example/ns#"
+
+# ONE Record ParticipantIdentifier codes used for the reporting party.
+PARTICIPANT_ROLES = {
+    "SHP": "Shipper",
+    "CNE": "Consignee",
+    "FFW": "Freight forwarder",
+    "AIR": "Airline",
+    "GHA": "Ground handling agent",
+    "AGT": "Agent",
+    "CAG": "Consolidator",
+    "TRK": "Trucker",
+    "BRK": "Customs broker",
+    "APT": "Airport",
+    "NFY": "Notify party",
+}
+
+# Milestones that happen at the origin / destination airport (single leg).
+ORIGIN_MILESTONES = {1, 2, 3}       # RECEIVED, LOADED, DEPARTED
+DESTINATION_MILESTONES = {4, 5}     # ARRIVED, DELIVERED
 EVENT_TYPES = ("cargo:LogisticsEvent", CARGO_NS + "LogisticsEvent")
 ACTUAL = "ACTUAL"
 
 STATUS_MISMATCH = "STATUS_MISMATCH"
 INVALID_TRANSITION = "INVALID_TRANSITION"
 DUPLICATE_IDENTIFIER = "DUPLICATE_IDENTIFIER"
+LOCATION_MISMATCH = "LOCATION_MISMATCH"
 
 SEVERITY = {
     STATUS_MISMATCH: "MEDIUM",
@@ -59,6 +83,7 @@ SEVERITY = {
 }
 
 _STATUS_CODE_PATTERN = re.compile(r"^[A-Z]{3}$")
+_LOCATION_CODE_PATTERN = re.compile(r"^[A-Z]{3}$|^[A-Z]{5}$")
 
 
 class EventValidationError(ValueError):
@@ -75,6 +100,8 @@ class ParsedEvent:
     time_type: str
     recording_org: str
     partial: bool
+    location: str | None = None
+    reporter_role: str | None = None
 
     @property
     def milestone(self) -> str | None:
@@ -97,11 +124,24 @@ class RuleHit:
     conflict_type: str
     severity: str
     description: str
+    field: str | None = None
+    value_a: object = None   # value in the NEW record
+    value_b: object = None   # value in the STORED record
 
 
 # --------------------------------------------------------------------------- #
 # Parsing helpers
 # --------------------------------------------------------------------------- #
+
+def short_org(iri: str) -> str:
+    """Readable organisation name for descriptions: the host of its IRI."""
+    host = urlparse(iri).netloc if isinstance(iri, str) else ""
+    return host or str(iri)
+
+
+def short_time(moment: datetime) -> str:
+    return moment.astimezone(timezone.utc).strftime("%d %b %H:%M UTC")
+
 
 def is_event_type(object_type) -> bool:
     types = object_type if isinstance(object_type, list) else [object_type]
@@ -172,6 +212,46 @@ def parse_time_type(value) -> str:
     return token
 
 
+def parse_location(value, field: str) -> str | None:
+    """Accept a ONE Record Location ({"cargo:locationCodes": [{"cargo:code":
+    "BOM"}]}), a {"cargo:code": ...} object or a plain "BOM" string.
+    Returns the upper-case IATA (3) or UN/LOCODE (5) code, or None."""
+    if value is None:
+        return None
+    code = value
+    if isinstance(value, dict):
+        codes = value.get("cargo:locationCodes", value)
+        if isinstance(codes, list):
+            codes = codes[0] if codes else None
+        if isinstance(codes, dict):
+            code = codes.get("cargo:code")
+        else:
+            code = codes
+    if not isinstance(code, str) or not code.strip():
+        raise EventValidationError(f"{field} must contain a location code")
+    code = code.strip().upper()
+    if not _LOCATION_CODE_PATTERN.match(code):
+        raise EventValidationError(
+            f"{field} '{code}' must be a 3-letter IATA or 5-letter UN/LOCODE"
+        )
+    return code
+
+
+def parse_role(value, field: str = "acp:reporterRole") -> str | None:
+    """Accept a ParticipantIdentifier IRI or a plain code such as "AIR"."""
+    if value is None:
+        return None
+    raw = _reference(value, field)
+    if "#" in raw:
+        raw = raw.split("#", 1)[1]
+    code = raw.strip().upper()
+    if code not in PARTICIPANT_ROLES:
+        raise EventValidationError(
+            f"{field} '{code}' is not a supported ParticipantIdentifier code"
+        )
+    return code
+
+
 def parse_partial(value) -> bool:
     if value is None:
         return False
@@ -202,6 +282,10 @@ def parse_event(document: dict) -> ParsedEvent:
             "cargo:recordingOrganization must be an absolute HTTP or HTTPS URI"
         )
     partial = parse_partial(document.get("cargo:partialEventIndicator"))
+    location = parse_location(
+        document.get("cargo:eventLocation"), "cargo:eventLocation"
+    )
+    reporter_role = parse_role(document.get("acp:reporterRole"))
 
     return ParsedEvent(
         event_id=document["@id"],
@@ -212,6 +296,8 @@ def parse_event(document: dict) -> ParsedEvent:
         time_type=time_type,
         recording_org=recording_org,
         partial=partial,
+        location=location,
+        reporter_role=reporter_role,
     )
 
 
@@ -248,11 +334,13 @@ def compare(new: ParsedEvent, stored: ParsedEvent) -> RuleHit | None:
                 STATUS_MISMATCH,
                 SEVERITY[STATUS_MISMATCH],
                 (
-                    f"{new.milestone} reported at "
-                    f"{new.event_date.isoformat()} by {new.recording_org}, "
-                    f"but at {stored.event_date.isoformat()} by "
-                    f"{stored.recording_org}."
+                    f"{new.milestone} reported at {short_time(new.event_date)} by "
+                    f"{short_org(new.recording_org)}, but at "
+                    f"{short_time(stored.event_date)} by {short_org(stored.recording_org)}."
                 ),
+                field="eventDate",
+                value_a=new.event_date.isoformat(),
+                value_b=stored.event_date.isoformat(),
             )
         return None
 
@@ -270,9 +358,12 @@ def compare(new: ParsedEvent, stored: ParsedEvent) -> RuleHit | None:
             INVALID_TRANSITION,
             SEVERITY[INVALID_TRANSITION],
             (
-                f"{new.milestone} at {new.event_date.isoformat()} "
-                f"({new.recording_org}) contradicts {stored.milestone} at "
-                f"{stored.event_date.isoformat()} ({stored.recording_org})."
+                f"{new.milestone} at {short_time(new.event_date)} "
+                f"({short_org(new.recording_org)}) contradicts {stored.milestone} at "
+                f"{short_time(stored.event_date)} ({short_org(stored.recording_org)})."
             ),
+            field="eventDate",
+            value_a=f"{new.milestone} @ {new.event_date.isoformat()}",
+            value_b=f"{stored.milestone} @ {stored.event_date.isoformat()}",
         )
     return None

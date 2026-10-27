@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cargo Conflict Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #EEF2F5;
+  --panel: #FFFFFF;
+  --ink: #14324A;
+  --ink-soft: #4A6378;
+  --rule: #B9C7D3;
+  --rule-soft: #DCE4EB;
+  --high: #C8102E;
+  --high-bg: #FBE9EC;
+  --medium: #C27C00;
+  --medium-bg: #FDF3DF;
+  --low: #5B7083;
+  --low-bg: #E8EEF3;
+  --ok: #1F7A6D;
+  --ok-bg: #E2F2EF;
+  --focus: #1C64F2;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0E1D2B; --panel: #15283A; --ink: #E3ECF3; --ink-soft: #9FB4C6;
+    --rule: #33506A; --rule-soft: #22394E; --high: #FF5A6E; --high-bg: #3A1820;
+    --medium: #F2B23A; --medium-bg: #36290F; --low: #9FB4C6; --low-bg: #1E3346;
+    --ok: #4CC3B1; --ok-bg: #12352F; --focus: #7AA7FF;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body { font: 400 15px/1.5 var(--body); font-variant-numeric: tabular-nums; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- top bar ---------- */
+.bar {
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  padding: 10px 24px; background: var(--ink); color: var(--paper);
+}
+.brand { font: 700 22px/1 var(--display); letter-spacing: .01em; margin-right: 8px; }
+.brand small { font: 500 14px var(--body); opacity: .75; margin-left: 8px; }
+nav { display: flex; gap: 2px; flex-wrap: wrap; }
+nav a {
+  text-decoration: none; padding: 6px 12px; border-radius: 3px;
+  font: 600 16px/1.2 var(--display); opacity: .8;
+}
+nav a:hover { opacity: 1; background: rgba(255,255,255,.08); }
+nav a[aria-current="page"] { opacity: 1; background: var(--paper); color: var(--ink); }
+.chain-pill { margin-left: auto; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--low); display: inline-block; }
+.dot.on { background: #43D3B5; }
+.dot.sim { background: #F2B23A; }
+
+main { padding: 20px 24px 64px; max-width: 1440px; margin: 0 auto; }
+h1 { font: 700 30px/1.1 var(--display); margin: 4px 0 4px; }
+h2 { font: 600 21px/1.2 var(--display); margin: 0 0 10px; }
+h3 { font: 600 17px/1.2 var(--display); margin: 0 0 8px; }
+.lede { color: var(--ink-soft); margin: 0 0 18px; max-width: 72ch; }
+.muted { color: var(--ink-soft); }
+.small { font-size: 13px; }
+.mono { font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+
+/* ---------- form-field boxes (the waybill vernacular) ---------- */
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border: 1.5px solid var(--ink); background: var(--panel); }
+.field { padding: 6px 10px 8px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); min-height: 64px; }
+.field .k { font-size: 12px; color: var(--ink-soft); line-height: 1.2; }
+.field .v { font: 600 30px/1.1 var(--display); margin-top: 4px; }
+.field .v.high { color: var(--high); }
+
+.panel { background: var(--panel); border: 1px solid var(--rule); padding: 16px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
+.stack > * + * { margin-top: 20px; }
+@media (max-width: 960px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* ---------- conflict type board ---------- */
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1.5px solid var(--ink); background: var(--panel); }
+@media (max-width: 900px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cell { padding: 8px 10px 10px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  text-align: left; background: none; border-top: 0; border-left: 0; cursor: pointer; }
+.cell:hover { background: var(--low-bg); }
+.cell .k { font-size: 13px; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 8px; }
+.cell .n { font: 600 28px/1.1 var(--display); margin-top: 2px; }
+.cell .n span { font: 500 14px var(--body); color: var(--ink-soft); margin-left: 6px; }
+.cell .track { height: 4px; background: var(--rule-soft); margin-top: 8px; }
+.cell .track i { display: block; height: 100%; background: var(--ink); }
+.cell.zero .n { color: var(--rule); }
+.cat { font-size: 12px; color: var(--ink-soft); }
+
+/* ---------- chips ---------- */
+.sev { display: inline-block; font: 600 12px/1 var(--body); padding: 4px 7px; border-radius: 2px; border: 1px solid currentColor; }
+.sev.HIGH { color: var(--high); background: var(--high-bg); }
+.sev.MEDIUM { color: var(--medium); background: var(--medium-bg); }
+.sev.LOW { color: var(--low); background: var(--low-bg); }
+.tag { display: inline-block; font-size: 12px; padding: 2px 7px; border-radius: 2px; background: var(--low-bg); color: var(--ink-soft); }
+.tag.ok { background: var(--ok-bg); color: var(--ok); }
+.tag.bad { background: var(--high-bg); color: var(--high); }
+.tag.warn { background: var(--medium-bg); color: var(--medium); }
+
+/* ---------- tables ---------- */
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+th { font: 600 13px/1.2 var(--body); color: var(--ink-soft); border-bottom: 1.5px solid var(--rule); }
+td.num, th.num { text-align: right; }
+tbody tr.clickable { cursor: pointer; }
+tbody tr.clickable:hover { background: var(--low-bg); }
+.table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); }
+
+/* ---------- filters ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 14px; }
+.filters label { display: grid; gap: 3px; font-size: 13px; color: var(--ink-soft); }
+select, input[type=search], input[type=text], textarea {
+  border: 1px solid var(--rule); background: var(--panel); padding: 6px 8px; border-radius: 2px; min-width: 150px;
+}
+button.btn { border: 1.5px solid var(--ink); background: var(--panel); padding: 6px 12px; border-radius: 2px; cursor: pointer; font-weight: 600; }
+button.btn.primary { background: var(--ink); color: var(--paper); }
+button.btn:hover { filter: brightness(.95); }
+button.btn:disabled { opacity: .5; cursor: default; }
+
+/* ---------- conflict detail: the carbon-copy comparison ---------- */
+.drawer-back { position: fixed; inset: 0; background: rgba(10, 25, 40, .35); display: none; z-index: 10; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(980px, 100%); background: var(--paper);
+  z-index: 11; overflow-y: auto; transform: translateX(100%); transition: transform .22s ease-out;
+  border-left: 2px solid var(--ink); }
+.drawer.open { transform: none; }
+.drawer-back.open { display: block; }
+.drawer header { position: sticky; top: 0; background: var(--paper); padding: 16px 24px 12px; border-bottom: 1px solid var(--rule); z-index: 1; }
+.drawer .body { padding: 18px 24px 40px; }
+.drawer .close { float: right; }
+.copies { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1.5px solid var(--ink); background: var(--panel); }
+@media (max-width: 700px) { .copies { grid-template-columns: 1fr; } }
+.copy { padding: 0; }
+.copy + .copy { border-left: 1.5px dashed var(--ink); }
+@media (max-width: 700px) { .copy + .copy { border-left: 0; border-top: 1.5px dashed var(--ink); } }
+.copy .who { padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+.copy .who .role { font: 600 20px/1.1 var(--display); }
+.copy .row { display: grid; grid-template-columns: 140px 1fr; border-bottom: 1px solid var(--rule-soft); }
+.copy .row .k { padding: 6px 10px; font-size: 12.5px; color: var(--ink-soft); border-right: 1px solid var(--rule-soft); }
+.copy .row .v { padding: 6px 10px; font-weight: 500; overflow-wrap: anywhere; }
+.copy .row.disputed { outline: 2.5px solid var(--high); outline-offset: -2.5px; background: var(--high-bg); }
+.copy .row.disputed .v { color: var(--high); font: 700 22px/1.2 var(--display); }
+details { margin-top: 12px; }
+summary { cursor: pointer; font-weight: 600; }
+pre { background: var(--panel); border: 1px solid var(--rule); padding: 10px; overflow: auto; max-height: 320px; font: 12px/1.45 var(--mono); }
+.verify-out { margin-top: 10px; }
+
+/* ---------- shipment ---------- */
+.ship-layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; }
+@media (max-width: 960px) { .ship-layout { grid-template-columns: 1fr; } }
+.ship-list { max-height: 78vh; overflow-y: auto; }
+.ship-list button { display: flex; width: 100%; justify-content: space-between; gap: 8px; text-align: left;
+  background: var(--panel); border: 0; border-bottom: 1px solid var(--rule-soft); padding: 8px 10px; cursor: pointer; }
+.ship-list button:hover, .ship-list button[aria-current="true"] { background: var(--low-bg); }
+.lanes svg { width: 100%; height: auto; display: block; }
+td.mismatch { background: var(--high-bg); color: var(--high); font-weight: 600; }
+
+/* ---------- charts ---------- */
+.bars svg { width: 100%; height: 150px; display: block; }
+.heat td { text-align: center; font-size: 13px; padding: 5px 4px; }
+.heat th { font-size: 12px; writing-mode: vertical-rl; transform: rotate(180deg); vertical-align: bottom; padding: 4px 2px; }
+.heat th.rowh { writing-mode: horizontal-tb; transform: none; text-align: left; }
+
+.empty { padding: 28px; text-align: center; color: var(--ink-soft); background: var(--panel); border: 1px dashed var(--rule); }
+.feed li { list-style: none; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; cursor: pointer; }
+.feed { margin: 0; padding: 0; }
+.feed li:hover .t { text-decoration: underline; }
+.warnbox { border-left: 4px solid var(--medium); background: var(--medium-bg); padding: 10px 12px; margin-bottom: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="brand">Cargo Conflict Desk<small>ONE Record data, anchored on Algorand</small></div>
+  <nav aria-label="Sections">
+    <a href="#/overview">Overview</a>
+    <a href="#/conflicts">Conflicts</a>
+    <a href="#/shipments">Shipments</a>
+    <a href="#/metrics">Metrics</a>
+    <a href="#/algorand">Algorand</a>
+  </nav>
+  <div class="chain-pill" id="chainPill"><span class="dot"></span><span>Chain: checking</span></div>
+</div>
+<main id="view" aria-live="polite"></main>
+
+<div class="drawer-back" id="drawerBack"></div>
+<aside class="drawer" id="drawer" aria-label="Conflict detail" aria-hidden="true"></aside>
+
+<script>
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = (n) => n == null ? "–" : Number(n).toLocaleString();
+const pct = (v) => v == null ? "–" : (v * 100).toFixed(1) + "%";
+const ms = (v) => v == null ? "–" : (v >= 100 ? Math.round(v) : Number(v).toFixed(v < 10 ? 2 : 1)) + " ms";
+const shortId = (id) => { if (!id) return ""; try { const u = new URL(id); return u.host.replace(/\.example$/, "") + u.pathname; } catch { return id; } };
+const shipLabel = (id) => id ? String(id).split("/").filter(Boolean).pop() : "";
+const when = (iso) => iso ? new Date(iso).toLocaleString(undefined, {month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"}) : "";
+let CATALOG = null;
+let timer = null;
+
+async function api(path, options) {
+  const res = await fetch(path, options);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) { const e = new Error(body.detail || res.statusText); e.status = res.status; throw e; }
+  return body;
+}
+const label = (t) => CATALOG?.conflictTypes?.[t]?.label || t;
+const roleName = (r) => CATALOG?.roles?.[r] || r || "Unknown party";
+const sevChip = (s) => `<span class="sev ${esc(s)}">${esc(s ? s[0] + s.slice(1).toLowerCase() : "")}</span>`;
+
+function chainTag(status) {
+  const map = { CONFIRMED: ["ok", "Anchored"], RESOLVED_ON_CHAIN: ["ok", "Resolved on-chain"],
+    QUEUED: ["warn", "Queued"], FAILED: ["bad", "Anchor failed"], RESOLVE_FAILED: ["bad", "Resolve failed"],
+    NOT_SUBMITTED: ["", "Not anchored"] };
+  const [cls, text] = map[status] || ["", status || "Not anchored"];
+  return `<span class="tag ${cls}">${esc(text)}</span>`;
+}
+
+/* ------------------------------------------------------------------ chain pill */
+async function refreshPill() {
+  try {
+    const s = await api("/chain/status");
+    const pill = $("#chainPill");
+    const cls = s.mode === "algorand" ? "on" : s.mode === "simulated" ? "sim" : "";
+    const text = s.mode === "algorand" ? `Algorand ${s.network ? "(" + shortId(s.network) + ")" : ""}`
+      : s.mode === "simulated" ? "Simulated chain (demo)" : "Chain anchoring off";
+    pill.innerHTML = `<span class="dot ${cls}"></span><span>${esc(text)}${s.queue_depth ? `, ${s.queue_depth} queued` : ""}</span>`;
+  } catch { /* server not reachable */ }
+}
+
+/* ------------------------------------------------------------------ router */
+const routes = { overview: viewOverview, conflicts: viewConflicts, shipments: viewShipments, metrics: viewMetrics, algorand: viewAlgorand };
+async function route() {
+  clearInterval(timer);
+  const [name, query] = (location.hash.replace(/^#\/?/, "") || "overview").split("?");
+  const params = new URLSearchParams(query || "");
+  document.querySelectorAll("nav a").forEach(a => a.setAttribute("aria-current", a.getAttribute("href") === "#/" + name ? "page" : "false"));
+  if (!params.get("conflict")) closeDrawer();
+  const fn = routes[name] || viewOverview;
+  try { await fn(params); } catch (e) { $("#view").innerHTML = `<div class="empty">Could not load this page: ${esc(e.message)}. Is the API running?</div>`; }
+  if (params.get("conflict")) openConflict(params.get("conflict"));
+}
+window.addEventListener("hashchange", route);
+
+/* ------------------------------------------------------------------ overview */
+async function viewOverview() {
+  const draw = async () => {
+    const s = await api("/dashboard/summary");
+    const types = Object.keys(CATALOG.conflictTypes);
+    const maxTotal = Math.max(1, ...types.map(t => s.byType[t]?.total || 0));
+    $("#view").innerHTML = `
+      <h1>Conflicts between parties' shipment data</h1>
+      <p class="lede">Every shipment event and party report is filtered, compared with what other parties said about the same shipment, and classified. Pick a type to see its conflicts.</p>
+      <div class="stack">
+        <div class="fields" role="list">
+          ${field("Records received", fmt(s.records))}
+          ${field("Shipments", fmt(s.shipments))}
+          ${field("Events", fmt(s.events))}
+          ${field("Party reports", fmt(s.reports))}
+          ${field("Rejected by filter", fmt(s.rejected))}
+          ${field("Open conflicts", fmt(s.openConflicts))}
+          ${field("Open, high severity", fmt(s.openHigh), s.openHigh > 0)}
+          ${field("Shipments affected", fmt(s.shipmentsWithConflicts))}
+        </div>
+        <section aria-labelledby="types-h">
+          <h2 id="types-h">By conflict type</h2>
+          <div class="board">
+            ${types.map(t => {
+              const v = s.byType[t] || {total: 0, open: 0, high: 0};
+              return `<button class="cell ${v.total ? "" : "zero"}" data-type="${esc(t)}" title="${esc(CATALOG.conflictTypes[t].meaning)}">
+                <div class="k"><span>${esc(label(t))}</span><span class="cat">${esc(CATALOG.conflictTypes[t].category.toLowerCase())}</span></div>
+                <div class="n">${fmt(v.open)}<span>open of ${fmt(v.total)}</span></div>
+                <div class="track"><i style="width:${(v.total / maxTotal * 100).toFixed(1)}%"></i></div>
+              </button>`;
+            }).join("")}
+          </div>
+        </section>
+        <div class="grid2">
+          <section class="panel" aria-labelledby="recent-h">
+            <h2 id="recent-h">Latest conflicts</h2>
+            ${s.recent.length ? `<ul class="feed">${s.recent.map(c => `
+              <li data-id="${esc(c.conflict_id)}">${sevChip(c.severity)}
+                <span><span class="t">${esc(c.label)}</span> <span class="muted small">${esc(shipLabel(c.shipment_id))}</span><br>
+                <span class="small muted">${esc(c.description)}</span></span>
+                <span class="small muted">${esc(when(c.detected_at))}</span></li>`).join("")}</ul>`
+              : `<div class="empty">No conflicts yet. Send data with <code>python -m evaluation.simulator --live</code>.</div>`}
+          </section>
+          <section class="panel" aria-labelledby="flow-h">
+            <h2 id="flow-h">Incoming records per minute</h2>
+            <div class="bars">${barChart(s.perMinute)}</div>
+            <p class="small muted">Dark bars are records received; red marks show how many conflicts they raised.</p>
+            <h3 style="margin-top:18px">Open conflicts by severity</h3>
+            <div class="fields">${["HIGH","MEDIUM","LOW"].map(k => field(k[0] + k.slice(1).toLowerCase(), fmt(s.bySeverityOpen[k] || 0), k === "HIGH" && s.bySeverityOpen[k])).join("")}</div>
+          </section>
+        </div>
+      </div>`;
+    document.querySelectorAll(".cell").forEach(b => b.onclick = () => location.hash = `#/conflicts?type=${b.dataset.type}`);
+    document.querySelectorAll(".feed li").forEach(li => li.onclick = () => openConflict(li.dataset.id));
+  };
+  await draw();
+  timer = setInterval(() => { if (!$("#drawer").classList.contains("open")) draw().catch(() => {}); }, 4000);
+}
+const field = (k, v, high) => `<div class="field" role="listitem"><div class="k">${esc(k)}</div><div class="v ${high ? "high" : ""}">${v}</div></div>`;
+
+function barChart(rows) {
+  if (!rows.length) return `<div class="empty small">Nothing received yet.</div>`;
+  const W = 600, H = 150, pad = 18, n = rows.length, bw = Math.min((W - pad) / n, 28);
+  const max = Math.max(1, ...rows.map(r => r.records));
+  const bars = rows.map((r, i) => {
+    const h = (r.records / max) * (H - 30), x = pad + i * bw;
+    const ch = (r.conflicts / max) * (H - 30);
+    return `<rect x="${x + 1}" y="${H - 18 - h}" width="${Math.max(1, bw - 2)}" height="${h}" fill="var(--ink)"><title>${esc(r.minute)}: ${r.records} records, ${r.conflicts} conflicts</title></rect>
+      ${r.conflicts ? `<rect x="${x + 1}" y="${H - 18 - ch}" width="${Math.max(1, bw - 2)}" height="2.5" fill="var(--high)"/>` : ""}`;
+  }).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Records per minute">
+    <text x="0" y="12" font-size="11" fill="var(--ink-soft)">${max}</text>
+    <line x1="${pad}" x2="${W}" y1="${H - 18}" y2="${H - 18}" stroke="var(--rule)"/>
+    ${bars}
+    <text x="${pad}" y="${H - 4}" font-size="11" fill="var(--ink-soft)">${esc(rows[0].minute.slice(11))}</text>
+    <text x="${pad + n * bw}" y="${H - 4}" font-size="11" fill="var(--ink-soft)" text-anchor="end">${n > 1 ? esc(rows[n - 1].minute.slice(11)) + " " : ""}UTC</text></svg>`;
+}
+
+/* ------------------------------------------------------------------ conflicts list */
+async function viewConflicts(params) {
+  const f = { status: params.has("status") ? params.get("status") : "OPEN", type: params.get("type") || "", severity: params.get("severity") || "", q: params.get("q") || "" };
+  const types = Object.keys(CATALOG.conflictTypes);
+  $("#view").innerHTML = `
+    <h1>Conflicts</h1>
+    <p class="lede">Each row is one disagreement between two records. Open a row to compare both parties' values side by side.</p>
+    <form class="filters" id="filters">
+      <label>Status<select name="status">${["OPEN","RESOLVED",""].map(v => `<option value="${v}" ${f.status === v ? "selected" : ""}>${v ? v[0] + v.slice(1).toLowerCase() : "Any"}</option>`).join("")}</select></label>
+      <label>Type<select name="type"><option value="">Any type</option>${types.map(t => `<option value="${t}" ${f.type === t ? "selected" : ""}>${esc(label(t))}</option>`).join("")}</select></label>
+      <label>Severity<select name="severity">${["","HIGH","MEDIUM","LOW"].map(v => `<option value="${v}" ${f.severity === v ? "selected" : ""}>${v ? v[0] + v.slice(1).toLowerCase() : "Any"}</option>`).join("")}</select></label>
+      <label>Search<input type="search" name="q" value="${esc(f.q)}" placeholder="Shipment, record or text"></label>
+      <button class="btn primary">Apply filters</button>
+    </form>
+    <div id="table"></div>`;
+  $("#filters").onsubmit = (e) => {
+    e.preventDefault();
+    const data = new URLSearchParams(new FormData(e.target));
+    [...data.keys()].forEach(k => { if (!data.get(k)) data.delete(k); });
+    if (!data.get("status")) data.set("status", "");
+    location.hash = "#/conflicts?" + data.toString();
+  };
+  const query = new URLSearchParams({ limit: 300 });
+  Object.entries(f).forEach(([k, v]) => v && query.set(k, v));
+  const res = await api("/conflicts?" + query);
+  $("#table").innerHTML = res.items.length ? `
+    <p class="small muted">${fmt(res.total)} conflicts${res.total > res.count ? `, showing the latest ${res.count}` : ""}.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Severity</th><th>Type</th><th>Shipment</th><th>Field</th><th>What disagrees</th><th>Detected</th><th>Algorand</th></tr></thead>
+      <tbody>${res.items.map(c => `<tr class="clickable" data-id="${esc(c.conflict_id)}" tabindex="0">
+        <td>${sevChip(c.severity)}</td><td>${esc(c.label)}</td><td class="small">${esc(shipLabel(c.shipment_id))}</td>
+        <td class="small">${esc(c.field || "")}</td>
+        <td class="small">${c.details?.new ? `${esc(fmtValue(c.details.new.value))} <span class="muted">vs</span> ${esc(fmtValue(c.details.stored?.value))}` : esc(c.description)}</td>
+        <td class="small muted">${esc(when(c.detected_at))}</td><td>${chainTag(c.chain_status)}</td></tr>`).join("")}</tbody>
+    </table></div>` : `<div class="empty">No conflicts match these filters.</div>`;
+  document.querySelectorAll("tr.clickable").forEach(tr => {
+    tr.onclick = () => openConflict(tr.dataset.id);
+    tr.onkeydown = (e) => { if (e.key === "Enter") openConflict(tr.dataset.id); };
+  });
+}
+function fmtValue(v) {
+  if (v == null) return "–";
+  if (Array.isArray(v)) return v.length ? v.join(", ") : "none";
+  if (typeof v === "string" && /^\d{4}-\d\d-\d\dT/.test(v)) return when(v);
+  if (typeof v === "string" && /^[0-9a-f]{64}$/.test(v)) return "sha256 " + v.slice(0, 12) + "…";
+  return String(v).replace(/ @ (\d{4}-\d\d-\d\dT[^ ]+)/, (_, d) => " at " + when(d));
+}
+
+/* ------------------------------------------------------------------ conflict drawer */
+function closeDrawer() {
+  $("#drawer").classList.remove("open"); $("#drawerBack").classList.remove("open");
+  $("#drawer").setAttribute("aria-hidden", "true");
+}
+$("#drawerBack").onclick = closeDrawer;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+
+function recordRows(rec, disputedField) {
+  const rows = [];
+  const s = rec.summary || {};
+  if (rec.kind === "event") {
+    rows.push(["Milestone", `${s.milestone || "–"} (${s.status_code})`, disputedField === "eventDate"]);
+    rows.push(["Event time", when(s.event_date), disputedField === "eventDate"]);
+    rows.push(["Location", s.location || "–", (disputedField || "").startsWith("eventLocation")]);
+    rows.push(["Time type", s.time_type]);
+  } else if (rec.kind === "report") {
+    const f = s.fields || {};
+    const base = { KGM: "kg", GRM: "kg", TNE: "kg", LBR: "kg", ONZ: "kg" };
+    const q = (x) => x ? `${x.value} ${x.unit}` + (x.unit !== "KGM" && x.unit !== "MTQ" ? ` (= ${x.normalised.toFixed(2)} ${base[x.unit] || "m³"})` : "") : "–";
+    rows.push(["Gross weight", q(f.weight), disputedField === "totalGrossWeight"]);
+    rows.push(["Volume", q(f.volume), disputedField === "volume"]);
+    rows.push(["Pieces (SLAC)", f.pieces ?? "–", disputedField === "slac"]);
+    rows.push(["Origin", f.origin || "–", disputedField === "origin" || disputedField === "eventLocation/origin"]);
+    rows.push(["Destination", f.destination || "–", disputedField === "destination" || disputedField === "eventLocation/destination"]);
+    rows.push(["Waybill", f.waybill || "–", disputedField === "waybillNumber"]);
+    rows.push(["Special handling", (f.special_handling || []).join(", ") || "none", disputedField === "specialHandlingCodes"]);
+    for (const [role, p] of Object.entries(f.parties || {})) {
+      rows.push([roleName(role), (p.name || "") + (p.org_id ? ` <${shortId(p.org_id)}>` : ""), disputedField === "party:" + role]);
+    }
+    if (s.superseded) rows.push(["Status", "Superseded by a newer report"]);
+  } else {
+    rows.push(["Record", "Logistics object"]);
+  }
+  rows.push(["Payload SHA-256", rec.payload_sha256.slice(0, 16) + "…", disputedField === "@id"]);
+  return rows.map(([k, v, d]) => `<div class="row ${d ? "disputed" : ""}"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join("");
+}
+
+async function openConflict(id) {
+  const drawer = $("#drawer");
+  drawer.innerHTML = `<header><h2>Loading conflict…</h2></header>`;
+  drawer.classList.add("open"); $("#drawerBack").classList.add("open"); drawer.setAttribute("aria-hidden", "false");
+  let c;
+  try { c = await api("/conflicts/" + encodeURIComponent(id)); }
+  catch (e) { drawer.innerHTML = `<header><button class="btn close" onclick="closeDrawer()">Close</button><h2>Conflict not found</h2></header>`; return; }
+  const meaning = CATALOG.conflictTypes[c.conflict_type]?.meaning || "";
+  const recs = c.records;
+  const copy = (rec, title) => rec ? `<div class="copy">
+      <div class="who"><div class="role">${esc(rec.role_name || roleName(rec.reporter_role))}</div>
+        <div class="small">${esc(rec.org_name || shortId(rec.recording_org) || "Unknown organisation")}</div>
+        <div class="small muted">${esc(title)}: ${esc(rec.kind)} <span class="mono">${esc(shortId(rec.record_id))}</span></div></div>
+      ${recordRows(rec, c.field)}</div>` : "";
+  const parties = recs.filter(r => r.recording_org);
+  drawer.innerHTML = `
+    <header>
+      <button class="btn close" id="closeBtn">Close</button>
+      <div>${sevChip(c.severity)} <span class="tag">${esc(c.category.toLowerCase())}</span> <span class="tag">${esc(c.status === "OPEN" ? "Open" : "Resolved")}</span> ${chainTag(c.chain_status)}</div>
+      <h1 style="margin-top:8px">${esc(c.label)}</h1>
+      <div class="small muted">Shipment ${esc(shipLabel(c.shipment_id))}, detected ${esc(when(c.detected_at))}</div>
+    </header>
+    <div class="body stack">
+      <div>
+        <p style="margin:0 0 4px;font-weight:600">${esc(c.description)}</p>
+        <p class="small muted" style="margin:0">${esc(meaning)}</p>
+      </div>
+      <div class="copies">${copy(recs.find(r => r.side === "new"), "Newer record")}${copy(recs.find(r => r.side === "stored"), "Earlier record")}</div>
+      ${recs.length === 1 ? `<p class="small muted">A duplicate has only one identifier: the same @id was received twice. The highlighted row compares the two payload hashes: ${esc(fmtValue(c.details?.new?.value))} now vs ${esc(fmtValue(c.details?.stored?.value))} before.</p>` : ""}
+      <details><summary>Raw JSON-LD of both records</summary>${recs.map(r => `<h3 style="margin-top:10px">${esc(r.side === "new" ? "Newer" : "Earlier")} record</h3><pre>${esc(JSON.stringify(r.payload, null, 2))}</pre>`).join("")}</details>
+
+      <section class="panel">
+        <h2>Resolve</h2>
+        ${c.status === "OPEN" ? `
+          <p class="small muted">Record which party's version is correct. The resolution is written to the audit log${c.chain_status === "CONFIRMED" ? " and to the conflict registry on Algorand" : ""}.</p>
+          <label class="small muted" for="note">Note</label><br>
+          <input type="text" id="note" style="width:100%;max-width:520px" placeholder="For example: weighbridge slip confirms the airline weight">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            ${recs.map(r => `<button class="btn" data-accept="${esc(r.record_id)}">Accept ${esc(r.role_name || r.kind)} version</button>`).join("")}
+            <button class="btn" data-accept="">Resolve without choosing</button>
+          </div>` : `<p>Resolved ${esc(when(c.resolved_at))} by ${esc(c.resolved_by || "operator")}${c.accepted_record ? `, accepting <span class="mono">${esc(shortId(c.accepted_record))}</span>` : ""}.${c.resolution_note ? ` Note: ${esc(c.resolution_note)}` : ""}</p>`}
+      </section>
+
+      <section class="panel">
+        <h2>Evidence</h2>
+        <p class="small muted">Showcase: either party can attach a document. Its SHA-256 hash is stored and registered on Algorand, so a later copy can be checked against it.</p>
+        ${c.evidence.length ? `<table><thead><tr><th>Party</th><th>File</th><th>SHA-256</th><th>Algorand</th><th></th></tr></thead><tbody>
+          ${c.evidence.map(e => `<tr><td>${esc(roleName(e.party_role))}</td><td><a href="/evidence/${esc(e.evidence_id)}/file">${esc(e.filename)}</a><div class="small muted">${esc(e.note || "")}</div></td>
+            <td class="mono">${esc(e.sha256.slice(0, 20))}…</td><td>${chainTag(e.chain_status)}</td>
+            <td><label class="btn small" style="display:inline-block;cursor:pointer">Check a copy<input type="file" class="sr" data-verify="${esc(e.evidence_id)}"></label><div class="small" id="vr-${esc(e.evidence_id)}"></div></td></tr>`).join("")}
+        </tbody></table>` : `<p class="small muted">No evidence attached yet.</p>`}
+        ${parties.length ? `<form id="evForm" class="filters" style="margin-top:12px">
+          <label>Party<select name="party">${parties.map(r => `<option value="${esc(r.recording_org)}">${esc(r.role_name || shortId(r.recording_org))}</option>`).join("")}</select></label>
+          <label>File<input type="file" name="file" required></label>
+          <label>Note<input type="text" name="note" placeholder="What this shows"></label>
+          <button class="btn">Attach evidence</button>
+        </form><div id="evMsg" class="small"></div>` : ""}
+      </section>
+
+      <section class="panel">
+        <h2>Integrity on Algorand</h2>
+        <p class="small muted">The conflict hash covers the conflict and the SHA-256 of both records. Checking recomputes it from the database and compares it with the value stored on-chain.</p>
+        <div class="small">Conflict hash <span class="mono">${esc(c.conflict_hash || "–")}</span></div>
+        ${c.chain_transactions.map(t => `<div class="small">${esc(t.kind)}: ${chainTag(t.status)} ${t.tx_id ? `tx <span class="mono">${esc(t.tx_id)}</span>` : ""} ${t.confirmed_round ? `round ${esc(t.confirmed_round)}` : ""} ${t.confirm_ms != null ? `confirmed in ${esc(ms(t.confirm_ms))}` : ""} ${t.error ? `<span class="tag bad">${esc(t.error)}</span>` : ""} ${t.mode !== "algorand" ? `<span class="tag warn">${esc(t.mode)}</span>` : ""}</div>`).join("")}
+        <button class="btn" id="verifyBtn" style="margin-top:10px">Check integrity</button>
+        <div class="verify-out" id="verifyOut"></div>
+      </section>
+
+      <section><h3>History</h3>
+        <table><tbody><tr><td class="small muted">${esc(when(c.detected_at))}</td><td>Detected</td></tr>
+        ${c.audit.map(a => `<tr><td class="small muted">${esc(when(a.recorded_at))}</td><td>${esc(a.action.replace(/_/g, " ").toLowerCase())}</td></tr>`).join("")}</tbody></table>
+      </section>
+    </div>`;
+  $("#closeBtn").onclick = closeDrawer;
+  $("#closeBtn").focus();
+  drawer.querySelectorAll("[data-accept]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    const body = { note: $("#note").value || null, resolvedBy: "dashboard" };
+    if (b.dataset.accept) body.acceptedRecord = b.dataset.accept;
+    await api(`/conflicts/${encodeURIComponent(id)}/resolve`, { method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) });
+    openConflict(id);
+  });
+  $("#verifyBtn").onclick = async () => {
+    const out = $("#verifyOut");
+    out.textContent = "Checking…";
+    try {
+      const v = await api(`/conflicts/${encodeURIComponent(id)}/verify`);
+      const chainLine = v.mode === "off" ? "Chain anchoring is off, so there is nothing on-chain to compare."
+        : v.onChainHash == null ? "No value found on-chain yet (still queued, or anchoring failed)."
+        : v.onChainMatch ? `On-chain hash matches${v.confirmedRound ? ` (round ${v.confirmedRound})` : ""}${v.mode === "simulated" ? ", simulated chain" : ""}.`
+        : "On-chain hash does not match the records: something changed after anchoring.";
+      out.innerHTML = `<p><span class="tag ${v.databaseIntact ? "ok" : "bad"}">${v.databaseIntact ? "Database records unchanged" : "Database records changed since detection"}</span>
+        <span class="tag ${v.onChainMatch ? "ok" : v.onChainHash ? "bad" : ""}">${esc(chainLine)}</span></p>`;
+    } catch (e) { out.textContent = "Check failed: " + e.message; }
+  };
+  const form = $("#evForm");
+  if (form) form.onsubmit = async (e) => {
+    e.preventDefault();
+    const file = form.file.files[0];
+    if (!file) return;
+    $("#evMsg").textContent = "Uploading…";
+    try {
+      const r = await api(`/conflicts/${encodeURIComponent(id)}/evidence`, { method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ partyOrg: form.party.value, filename: file.name, contentType: file.type, note: form.note.value || null, contentBase64: await toBase64(file) }) });
+      $("#evMsg").textContent = `Attached. SHA-256 ${r.sha256.slice(0, 16)}…`;
+      setTimeout(() => openConflict(id), 800);
+    } catch (err) { $("#evMsg").textContent = "Upload failed: " + err.message; }
+  };
+  drawer.querySelectorAll("[data-verify]").forEach(input => input.onchange = async () => {
+    const out = $("#vr-" + input.dataset.verify);
+    const file = input.files[0]; if (!file) return;
+    const v = await api(`/evidence/${input.dataset.verify}/verify`, { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ contentBase64: await toBase64(file) }) });
+    out.innerHTML = v.matchesStored ? `<span class="tag ok">Matches${v.matchesOnChain ? " stored and on-chain hash" : " stored hash"}</span>` : `<span class="tag bad">Different file</span>`;
+  });
+}
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(String(reader.result).split(",")[1]);
+  reader.onerror = reject; reader.readAsDataURL(file);
+});
+
+/* ------------------------------------------------------------------ shipments */
+async function viewShipments(params) {
+  const list = await api("/dashboard/shipments?limit=500");
+  const selected = params.get("id") || (list.items.find(s => s.open) || list.items[0] || {}).object_id;
+  $("#view").innerHTML = `
+    <h1>Shipments</h1>
+    <p class="lede">The timeline shows what each party reported, one lane per party. Red marks are events involved in a conflict.</p>
+    ${list.items.length ? `<div class="ship-layout">
+      <div class="panel ship-list" style="padding:0">${list.items.map(s => `<button data-id="${esc(s.object_id)}" aria-current="${s.object_id === selected}">
+        <span><strong>${esc(shortId(s.object_id).split("/").pop())}</strong><br><span class="small muted">${s.events} events, ${s.reports} reports</span></span>
+        <span>${s.high ? `<span class="sev HIGH">${s.high} high</span>` : s.open ? `<span class="sev MEDIUM">${s.open} open</span>` : `<span class="tag ok">No conflicts</span>`}</span></button>`).join("")}</div>
+      <div id="shipDetail"></div></div>` : `<div class="empty">No shipments yet.</div>`}`;
+  document.querySelectorAll(".ship-list button").forEach(b => b.onclick = () => location.hash = "#/shipments?id=" + encodeURIComponent(b.dataset.id));
+  if (selected) await drawShipment(selected);
+}
+
+async function drawShipment(id) {
+  const d = await api("/dashboard/shipment?id=" + encodeURIComponent(id));
+  const current = d.reports.filter(r => !r.superseded);
+  const fieldsSpec = [
+    ["Gross weight (kg)", f => f.weight ? +f.weight.normalised.toFixed(1) : null, f => f.weight ? `${f.weight.value} ${f.weight.unit}` : "–", "totalGrossWeight"],
+    ["Volume (m³)", f => f.volume ? +f.volume.normalised.toFixed(2) : null, f => f.volume ? `${f.volume.value} ${f.volume.unit}` : "–", "volume"],
+    ["Pieces", f => f.pieces, f => f.pieces ?? "–", "slac"],
+    ["Origin", f => f.origin, f => f.origin || "–", "origin"],
+    ["Destination", f => f.destination, f => f.destination || "–", "destination"],
+    ["Waybill", f => f.waybill, f => f.waybill || "–", "waybillNumber"],
+    ["Special handling", f => (f.special_handling || []).join(","), f => (f.special_handling || []).join(", ") || "none", "specialHandlingCodes"],
+    ["Shipper", f => f.parties?.SHP?.name, f => f.parties?.SHP?.name || "–", "party:SHP"],
+    ["Consignee", f => f.parties?.CNE?.name, f => f.parties?.CNE?.name || "–", "party:CNE"],
+  ];
+  const conflictFields = new Set(d.conflicts.filter(c => c.status === "OPEN").map(c => c.field + "|" + c.object_id).concat(
+    d.conflicts.filter(c => c.status === "OPEN").map(c => c.field + "|" + c.related_object_id)));
+  $("#shipDetail").innerHTML = `
+    <div class="stack">
+      <div class="panel"><h2>Shipment ${esc(shipLabel(d.shipment.object_id))}</h2>
+        <div class="small muted">Waybill ${esc(d.shipment.document["cargo:waybillNumber"] || "–")}, ${d.events.length} events, ${current.length} current reports, ${d.conflicts.length} conflicts</div>
+        <div class="lanes" style="margin-top:12px">${lanes(d)}</div>
+      </div>
+      <div class="panel"><h2>What each party reported</h2>
+        ${current.length ? `<div class="table-wrap" style="border:0"><table><thead><tr><th>Field</th>${current.map(r => `<th>${esc(roleName(r.reporter_role))}<div class="small muted">${esc((d.participants[r.recording_org] || {}).name || shortId(r.recording_org))}</div></th>`).join("")}</tr></thead>
+        <tbody>${fieldsSpec.map(([name, , show, key]) => `<tr><td class="small muted">${esc(name)}</td>${current.map(r => `<td class="${conflictFields.has(key + "|" + r.report_id) ? "mismatch" : ""}">${esc(show(r.fields))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+        <p class="small muted">Highlighted cells are in an open conflict. Units are shown as each party sent them; comparison happens after conversion.</p>` : `<p class="muted">No party reports for this shipment yet.</p>`}
+      </div>
+      <div class="panel"><h2>Conflicts on this shipment</h2>
+        ${d.conflicts.length ? `<table><tbody>${d.conflicts.map(c => `<tr class="clickable" data-id="${esc(c.conflict_id)}"><td>${sevChip(c.severity)}</td><td>${esc(c.label)}</td><td class="small">${esc(c.description)}</td><td>${c.status === "OPEN" ? "" : `<span class="tag ok">Resolved</span>`}</td></tr>`).join("")}</tbody></table>` : `<p class="muted">No conflicts. All parties agree within tolerance.</p>`}
+      </div>
+    </div>`;
+  document.querySelectorAll("#shipDetail tr.clickable").forEach(tr => tr.onclick = () => openConflict(tr.dataset.id));
+}
+
+function lanes(d) {
+  const events = d.events.filter(e => e.time_type === "ACTUAL");
+  if (!events.length) return `<p class="muted">No events yet.</p>`;
+  const orgs = [...new Set(events.map(e => e.recording_org))];
+  const t = events.map(e => Date.parse(e.event_date));
+  let t0 = Math.min(...t), t1 = Math.max(...t);
+  if (events.some(e => e.status_code === "BKD") && events.length > 1) {
+    const rest = events.filter(e => e.status_code !== "BKD").map(e => Date.parse(e.event_date));
+    if (rest.length) t0 = Math.min(...rest);
+  }
+  if (t1 === t0) t1 = t0 + 3600e3;
+  const W = 900, left = 190, right = 24, laneH = 46, top = 26, H = top + orgs.length * laneH + 26;
+  const x = (ts) => left + Math.max(0, Math.min(1, (ts - t0) / (t1 - t0))) * (W - left - right);
+  const ticks = 5;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Event timeline by party">`;
+  for (let i = 0; i <= ticks; i++) {
+    const ts = t0 + (t1 - t0) * i / ticks, xx = x(ts);
+    svg += `<line x1="${xx}" x2="${xx}" y1="${top - 6}" y2="${H - 22}" stroke="var(--rule-soft)"/><text x="${xx}" y="${H - 6}" font-size="11" text-anchor="${i === 0 ? "start" : i === ticks ? "end" : "middle"}" fill="var(--ink-soft)">${esc(when(new Date(ts).toISOString()))}</text>`;
+  }
+  orgs.forEach((org, i) => {
+    const y = top + i * laneH + laneH / 2;
+    const p = d.participants[org] || {};
+    svg += `<line x1="${left}" x2="${W - right}" y1="${y}" y2="${y}" stroke="var(--rule)"/>
+      <text x="0" y="${y - 3}" font-size="13" font-weight="600" fill="var(--ink)">${esc(roleName(p.role).slice(0, 24))}</text>
+      <text x="0" y="${y + 12}" font-size="11" fill="var(--ink-soft)">${esc((p.name || shortId(org)).slice(0, 28))}</text>`;
+    events.filter(e => e.recording_org === org).forEach(e => {
+      const ts = Date.parse(e.event_date), xx = e.status_code === "BKD" && ts < t0 ? left - 8 : x(ts);
+      const c = e.disputed ? "var(--high)" : "var(--ink)";
+      svg += `<g><title>${esc(e.status_code)} ${esc(e.milestone || "")} at ${esc(when(e.event_date))}${e.location ? " in " + esc(e.location) : ""}${e.disputed ? " (in a conflict)" : ""}</title>
+        <rect x="${xx - 17}" y="${y - 11}" width="34" height="22" rx="2" fill="${e.disputed ? "var(--high-bg)" : "var(--panel)"}" stroke="${c}" stroke-width="${e.disputed ? 2 : 1.2}"/>
+        <text x="${xx}" y="${y + 4}" font-size="12" font-weight="600" text-anchor="middle" fill="${c}">${esc(e.status_code)}</text>
+        ${e.location ? `<text x="${xx}" y="${y - 15}" font-size="10" text-anchor="middle" fill="var(--ink-soft)">${esc(e.location)}</text>` : ""}</g>`;
+    });
+  });
+  return svg + `</svg>`;
+}
+
+/* ------------------------------------------------------------------ metrics */
+async function viewMetrics() {
+  const [ev, bench, live] = await Promise.all([
+    api("/metrics/evaluation").catch(() => null), api("/metrics/chain-benchmark").catch(() => null), api("/metrics/live"),
+  ]);
+  const types = Object.keys(CATALOG.conflictTypes);
+  let html = `<h1>Metrics</h1><p class="lede">Detection quality comes from labelled synthetic data (evaluation/evaluate.py). Algorand performance comes from evaluation/benchmark_chain.py, measured as transaction submission, confirmation and retrieval, as in Lau et al. (2025).</p><div class="stack">`;
+  if (ev) {
+    const s = ev.scores, p = ev.performance;
+    html += `<section><h2>Detection and classification</h2>
+      <p class="small muted">Run ${esc(when(ev.generated_at))}: ${fmt(ev.dataset.shipments)} shipments, ${fmt(ev.dataset.records)} records, ${fmt(s.totals.injections)} injected faults (seed ${esc(ev.dataset.seed)}). Simulated data: these numbers describe the prototype, not real-world accuracy.</p>
+      <div class="fields">${field("Macro F1", pct(s.macro.f1))}${field("Macro precision", pct(s.macro.precision))}${field("Macro recall", pct(s.macro.recall))}
+        ${field("Correct type", pct(s.classification_accuracy))}${field("False alarms on clean shipments", pct(s.shipments.false_alarm_rate), s.shipments.false_alarm_rate > 0.05)}
+        ${field("Invalid records rejected", pct(s.filter.rejection_rate))}${field("Throughput", fmt(p.throughput_records_per_second) + "/s")}${field("Latency p95", ms(p.client_latency_ms.p95))}</div></section>
+      <div class="grid2">
+        <section class="panel"><h3>Per conflict type</h3><div class="table-wrap" style="border:0"><table><thead><tr><th>Type</th><th class="num">Injected</th><th class="num">Flagged</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th></tr></thead><tbody>
+          ${types.map(t => { const v = s.per_type[t] || {}; return `<tr><td>${esc(label(t))}</td><td class="num">${fmt(v.injected)}</td><td class="num">${fmt(v.predicted)}</td><td class="num">${pct(v.precision)}</td><td class="num">${pct(v.recall)}</td><td class="num">${pct(v.f1)}</td></tr>`; }).join("")}
+        </tbody></table></div></section>
+        <section class="panel"><h3>Confusion: injected fault vs conflict type raised</h3>${confusion(s.confusion, types)}
+          <p class="small muted">Counts of conflicts that involve a corrupted record. Off-diagonal cells come from shipments that received two faults in the same record, and from wrong routes, which also contradict the airports in event reports.</p></section>
+      </div>`;
+    if (ev.scaling) {
+      html += `<section class="panel"><h3>Workload scaling</h3><table><thead><tr><th class="num">Shipments</th><th class="num">Records</th><th class="num">Throughput rec/s</th><th class="num">p50</th><th class="num">p95</th><th class="num">Macro F1</th></tr></thead><tbody>
+        ${ev.scaling.map(r => `<tr><td class="num">${fmt(r.shipments)}</td><td class="num">${fmt(r.records)}</td><td class="num">${fmt(r.throughput)}</td><td class="num">${ms(r.p50_ms)}</td><td class="num">${ms(r.p95_ms)}</td><td class="num">${pct(r.macro_f1)}</td></tr>`).join("")}</tbody></table></section>`;
+    }
+  } else {
+    html += `<div class="empty">No evaluation yet. Run <code>python -m evaluation.evaluate</code> in the project folder.</div>`;
+  }
+  if (bench) {
+    const sim = bench.mode !== "algorand";
+    html += `<section class="panel"><h2>Algorand anchoring performance</h2>
+      ${sim ? `<div class="warnbox">This is a simulated dry run, not an Algorand measurement. Deploy to LocalNet or TestNet and run <code>CHAIN_MODE=algorand python -m evaluation.benchmark_chain</code>. Fee and box-deposit figures are still exact, because they follow from the protocol rules.</div>` : ""}
+      <p class="small muted">Network ${esc(bench.network.genesis_id)} (${esc(bench.network.server)}), ${esc(when(bench.generated_at))}.</p>
+      <div class="table-wrap" style="border:0"><table><thead><tr><th>Method</th><th class="num">Submit p50</th><th class="num">Confirm p50</th><th class="num">Confirm p95</th><th class="num">Retrieve p50</th><th class="num">Fee µAlgo (spent)</th><th class="num">Box deposit µAlgo (locked)</th></tr></thead><tbody>
+      ${bench.sequential.map(r => { const t = (v) => sim ? "n/a" : ms(v); return `<tr><td>${esc(r.method)}</td><td class="num">${t(r.submit_ms.p50)}</td><td class="num">${t(r.confirm_ms.p50)}</td><td class="num">${t(r.confirm_ms.p95)}</td><td class="num">${t(r.retrieve_ms.p50)}</td><td class="num">${fmt(r.fee_microalgos_per_tx)}</td><td class="num">${fmt(r.box_mbr_microalgos_per_tx)}</td></tr>`; }).join("")}
+      </tbody></table></div>
+      ${sim ? `<p class="small muted">Latency and throughput appear after a run on a real node.</p>` : `<p class="small">Pipelined throughput: ${bench.pipelined.map(r => `${esc(r.method)} ${fmt(r.throughput_tps)} tx/s (${r.confirmed}/${r.submitted} confirmed)`).join("; ")}.</p>`}
+      <p class="small muted">The box deposit is locked in the app account while the record exists and is returned if the box is deleted; the fee is spent.</p></section>`;
+  } else {
+    html += `<div class="empty">No Algorand benchmark yet. Run <code>python -m evaluation.benchmark_chain</code>.</div>`;
+  }
+  const li = live.ingestion;
+  html += `<section class="panel"><h2>This server, live</h2>
+    <div class="fields">${field("Records", fmt(li.records))}${field("Rejected", fmt(li.rejected))}${field("Processing p50", ms(li.processingMs.p50))}${field("Processing p95", ms(li.processingMs.p95))}${field("Processing p99", ms(li.processingMs.p99))}</div>
+    ${Object.entries(live.chain).map(([mode, c]) => `<p class="small">${esc(mode)} chain: ${fmt(c.confirmed)} confirmed, ${fmt(c.failed)} failed, ${fmt(c.queued)} queued; confirmation p50 ${ms(c.confirmMs.p50)}, p95 ${ms(c.confirmMs.p95)}; fees ${fmt(c.totalFeeMicroAlgos)} µAlgo; box deposits ${fmt(c.totalBoxMbrMicroAlgos)} µAlgo.${mode !== "algorand" ? " Simulated: not an Algorand measurement." : ""}</p>`).join("")}
+  </section></div>`;
+  $("#view").innerHTML = html;
+}
+
+function confusion(matrix, types) {
+  const cols = [...types, "(missed)"];
+  const max = Math.max(1, ...Object.values(matrix).flatMap(r => Object.values(r)));
+  const short = (t) => t === "(missed)" ? "Missed" : label(t);
+  return `<div class="table-wrap" style="border:0"><table class="heat"><thead><tr><th class="rowh">Injected</th>${cols.map(c => `<th>${esc(short(c))}</th>`).join("")}</tr></thead><tbody>
+    ${types.filter(t => matrix[t]).map(t => `<tr><th class="rowh small">${esc(label(t))}</th>${cols.map(c => {
+      const v = matrix[t][c] || 0, a = v / max;
+      const diag = c === t;
+      const bg = !v ? "transparent" : diag ? `rgba(31,122,109,${0.15 + a * 0.6})` : `rgba(200,16,46,${0.15 + a * 0.6})`;
+      return `<td style="background:${bg}">${v || ""}</td>`;
+    }).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+/* ------------------------------------------------------------------ algorand */
+async function viewAlgorand() {
+  const [status, txs] = await Promise.all([api("/chain/status"), api("/chain/transactions?limit=150")]);
+  const modeText = { algorand: "Connected to an Algorand node.", simulated: "Simulated chain for demos: no Algorand node is used.", off: "Anchoring is off. Start the API with CHAIN_MODE=algorand after deploying the contracts." }[status.mode];
+  $("#view").innerHTML = `
+    <h1>Algorand</h1>
+    <p class="lede">${esc(modeText)} Conflicts, resolutions, events and evidence are anchored as SHA-256 hashes in the project's smart contracts. Shipment data itself never goes on-chain.</p>
+    ${status.mode === "simulated" ? `<div class="warnbox">Simulated mode. Transaction ids starting with SIM are not on any blockchain.</div>` : ""}
+    ${status.last_error ? `<div class="warnbox">Last error: ${esc(status.last_error)}</div>` : ""}
+    <div class="stack">
+      <div class="fields">
+        ${field("Mode", esc(status.mode))}
+        ${field("Confirmed", fmt(status.transactions?.CONFIRMED || 0))}
+        ${field("Queued", fmt((status.transactions?.QUEUED || 0)))}
+        ${field("Failed", fmt(status.transactions?.FAILED || 0), status.transactions?.FAILED)}
+      </div>
+      ${status.app_ids ? `<div class="panel"><h2>Contracts</h2><table><tbody>
+        ${Object.entries(status.app_ids).map(([k, v]) => `<tr><td>${esc({conflict_registry: "ConflictRegistry", evidence_registry: "EvidenceRegistry", hello_world: "AirCargoProvenance (events)"}[k] || k)}</td><td class="mono">${v ? "App " + esc(v) : "not deployed"}</td></tr>`).join("")}
+        ${status.sender ? `<tr><td>Signing account</td><td class="mono">${esc(status.sender)}</td></tr>` : ""}</tbody></table></div>` : ""}
+      <div class="panel"><h2>Latest transactions</h2>
+        ${txs.items.length ? `<div class="table-wrap" style="border:0"><table><thead><tr><th>Kind</th><th>Status</th><th>Transaction</th><th class="num">Round</th><th class="num">Confirm</th><th class="num">Fee µAlgo</th><th class="num">Box bytes</th><th>Read back</th></tr></thead><tbody>
+        ${txs.items.map(t => `<tr><td>${esc(t.kind)}</td><td>${chainTag(t.status)}</td><td class="mono">${esc(t.tx_id || t.error || "")}</td><td class="num">${fmt(t.confirmed_round)}</td><td class="num">${ms(t.confirm_ms)}</td><td class="num">${fmt(t.fee_microalgos)}</td><td class="num">${fmt(t.box_value_bytes)}</td><td>${t.verified ? `<span class="tag ok">Verified</span>` : t.status === "CONFIRMED" ? `<span class="tag bad">Mismatch</span>` : ""}</td></tr>`).join("")}
+        </tbody></table></div>` : `<p class="muted">No transactions yet.</p>`}
+      </div>
+    </div>`;
+}
+
+/* ------------------------------------------------------------------ start */
+(async function start() {
+  try { CATALOG = await api("/catalog"); }
+  catch { $("#view").innerHTML = `<div class="empty">The API is not responding. Start it with <code>poetry run uvicorn api.main:app</code>.</div>`; return; }
+  refreshPill(); setInterval(refreshPill, 5000);
+  route();
+})();
+</script>
+</body>
+</html>

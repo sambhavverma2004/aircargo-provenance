@@ -202,3 +202,8 @@ smart_contracts/hello_world/temp-puya-check/
 # Python caches
 __pycache__/
 *.py[cod]
+
+# Air cargo conflict desk
+api/evidence_files/
+evaluation/data/
+evaluation/results/*_2*.json

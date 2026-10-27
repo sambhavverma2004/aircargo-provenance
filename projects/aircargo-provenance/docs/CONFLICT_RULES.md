@@ -1,7 +1,7 @@
-# Event Schema and Conflict Rules (v1, draft)
+# Event Schema and Conflict Rules (v2)
 
-Status: **draft for review** — no code implements these rules yet.
-Scope: single-leg shipments, prototype only. Everything marked *Decision* needs sign-off before implementation.
+Status: **implemented** in `api/rules.py` (events, R1–R3), `api/report_rules.py` (R4–R12) and `api/main.py`. Tests: `tests/test_events.py`, `tests/test_rules.py`, `tests/test_reports.py`.
+Scope: single-leg shipments, prototype only. Decisions D1–D5 were taken with the proposed defaults; sections 11–13 add party reports.
 
 ---
 
@@ -197,3 +197,77 @@ The existing 24 tests stay as they are (shipment ingestion and `DUPLICATE_IDENTI
 | D3 | Accept client-supplied event `@id`? | Yes (aggregator role), documented as deviation |
 | D4 | Allow milestone gaps in the API? | Yes; contract alignment deferred to on-chain sync |
 | D5 | Unmapped status codes: store-not-compare or reject? | Store, mark out of scope |
+
+
+## 11. Party reports (v2)
+
+Events say *when* something happened. Shipment details (weight, pieces, parties, route...) come from each party's **party report**: that party's own version of the shipment, posted to
+
+```
+POST /logistics-objects/{shipment_id}/party-reports
+```
+
+```json
+{
+  "@context": { "cargo": "https://onerecord.iata.org/ns/cargo#" },
+  "@id": "https://airline.example/reports/r-1",
+  "@type": "cargo:Shipment",
+  "acp:reportFor": { "@id": "https://aggregator.example/logistics-objects/shp-1" },
+  "acp:recordingOrganization": { "@id": "https://airline.example/org" },
+  "acp:reporterRole": "AIR",
+  "acp:organizationName": "SkyBridge Cargo Airlines",
+  "cargo:waybillNumber": "176-12345675",
+  "cargo:totalGrossWeight": { "cargo:numericalValue": 1250,
+      "cargo:unit": { "@id": "https://onerecord.iata.org/ns/code-lists/MeasurementUnitCode#KGM" } },
+  "cargo:totalDimensions": { "cargo:volume": { "cargo:numericalValue": 7.5, "cargo:unit": "MTQ" } },
+  "cargo:slac": 10,
+  "cargo:departureLocation": { "cargo:locationCodes": [{ "cargo:code": "BOM" }] },
+  "cargo:arrivalLocation":   { "cargo:locationCodes": [{ "cargo:code": "FRA" }] },
+  "cargo:specialHandlingCodes": [{ "@id": "https://onerecord.iata.org/ns/code-lists/SpecialHandlingCode#PER" }],
+  "cargo:involvedParties": [
+    { "cargo:partyRole": { "@id": "https://onerecord.iata.org/ns/code-lists/ParticipantIdentifier#SHP" },
+      "cargo:partyDetails": { "@id": "https://shipper.example/org", "cargo:name": "Tata Exports Pvt Ltd" } }
+  ]
+}
+```
+
+Property names were checked against the ONE Record 2026-07 ontology (`IATA-1R-DM-Ontology.ttl`) and code lists (`IATA-1R-CL-Ontology.ttl`): `totalGrossWeight`, `numericalValue`, `unit` (MeasurementUnitCode `KGM`, `LBR`, `MTQ`, `FTQ`...), `totalDimensions`/`volume`, `slac` (shipper's load and count), `departureLocation`/`arrivalLocation`/`locationCodes`/`code`, `specialHandlingCodes` (SpecialHandlingCode and DangerousGoodsCode lists), `involvedParties`/`partyRole` (ParticipantIdentifier `SHP`, `CNE`, `FFW`, `AIR`, `GHA`...)/`partyDetails`/`name`, `waybillNumber`.
+
+Prototype-only properties use the `acp:` prefix and are **not** ONE Record: `acp:reportFor`, `acp:recordingOrganization`, `acp:reporterRole`, `acp:organizationName`. Events may also carry `cargo:eventLocation` and `acp:reporterRole`.
+
+Every field except the identifiers is optional; a field is compared only when both reports contain it. A missing or unknown unit, a negative weight, a 4-letter airport code etc. are **filter errors (HTTP 422), never conflicts**.
+
+A newer report from the same organisation **supersedes** its previous one (`superseded = 1`); comparisons use each party's current report. Reports from the same organisation are never compared with each other.
+
+## 12. Attribute and location rules
+
+Each rule compares one pair of records from **different** parties. One conflict is raised per disagreeing field per pair.
+
+| Rule | Type | Condition | Severity |
+|---|---|---|---|
+| R4 | `LOCATION_MISMATCH` | RCS/MAN/DEP event location ≠ a report's origin, or ARR/DLV location ≠ its destination (ACTUAL, non-partial events) | HIGH |
+| R5 | `WEIGHT_MISMATCH` | gross weights differ by > 2 % **and** > 0.5 kg after converting to kg | MEDIUM; HIGH > 10 % |
+| R6 | `UNIT_MISMATCH` | converted weights (or volumes) disagree, the units differ, **but the raw numbers agree within tolerance**: e.g. 1250 KGM vs 1250 LBR, a unit entry error | HIGH |
+| R7 | `VOLUME_MISMATCH` | volumes differ by > 5 % after converting to m³ | MEDIUM; HIGH > 20 % |
+| R8 | `PIECE_COUNT_MISMATCH` | `slac` differs | MEDIUM |
+| R9 | `PARTY_MISMATCH` | same role, different organisation `@id` (HIGH); without ids, normalised-name similarity < 0.88 (MEDIUM) | HIGH / MEDIUM |
+| R10 | `ROUTE_MISMATCH` | origin or destination airport differs (one conflict per end) | HIGH |
+| R11 | `SPECIAL_HANDLING_MISMATCH` | the sets of handling codes differ (order ignored) | HIGH if a DangerousGoodsCode is involved, else MEDIUM |
+| R12 | `REFERENCE_MISMATCH` | waybill numbers differ after removing spaces and dashes | HIGH |
+
+**Units are converted before comparing**, so 1250 KGM vs 2755.8 LBR is *not* a conflict. Supported: weight `KGM`, `GRM`, `TNE`, `LBR`, `ONZ`; volume `MTQ`, `CMQ`, `LTR`, `FTQ`, `INQ`.
+
+**Name normalisation (R9)**: Unicode accents removed, case folded, `&` → `and`, `M/s` removed, dotted acronyms joined (`L.L.C.` → `llc`), punctuation removed, common abbreviations expanded (`Intl` → `international`...), legal-form words dropped (`Pvt`, `Ltd`, `LLC`, `GmbH`...). Then `difflib.SequenceMatcher` similarity ≥ 0.88 counts as the same party. Organisation ids, when both reports have them, always win over names.
+
+R4 is checked in both directions (a new event against stored reports, and a new report against stored events), so the result does not depend on arrival order. This was tested explicitly.
+
+## 13. Conflict records
+
+Every conflict stores: type, severity, the two record ids (`object_id` = newer, `related_object_id` = earlier), the shipment, the disputed `field`, `details` with both values and organisations, a description, and a **conflict hash**:
+
+```
+SHA-256( canonical JSON of { conflict id, type, shipment, both record ids,
+                             SHA-256 of both record payloads, details } )
+```
+
+The hash is anchored on Algorand (`ConflictRegistry.report_conflict`), so `GET /conflicts/{id}/verify` can later prove that neither record changed after detection (see `docs/RUNNING.md`).

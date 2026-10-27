@@ -1,0 +1,332 @@
+{
+  "generated_at": "2026-10-27T13:59:19.454990+00:00",
+  "mode": "simulated",
+  "network": {
+    "genesis_id": "simulated",
+    "last_round": 1144,
+    "min_fee": 1000,
+    "server": "in-memory"
+  },
+  "app_ids": null,
+  "parameters": {
+    "n": 20,
+    "pipelined": 30,
+    "payload_sizes": "16,64,256,1024",
+    "simulated": true,
+    "no_save": false
+  },
+  "sequential": [
+    {
+      "method": "record_event",
+      "transactions": 20,
+      "failures": 0,
+      "submit_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "confirm_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "retrieve_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.001,
+        "p99": 0.001,
+        "max": 0.001
+      },
+      "rounds_to_confirm": {
+        "count": 20,
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1
+      },
+      "fee_microalgos_per_tx": 1000.0,
+      "box_value_bytes": 108.0,
+      "box_mbr_microalgos_per_tx": 59700.0,
+      "cost_algo_per_tx": 0.0607
+    },
+    {
+      "method": "report_conflict",
+      "transactions": 20,
+      "failures": 0,
+      "submit_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "confirm_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "retrieve_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.001,
+        "p99": 0.001,
+        "max": 0.001
+      },
+      "rounds_to_confirm": {
+        "count": 20,
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1
+      },
+      "fee_microalgos_per_tx": 1000.0,
+      "box_value_bytes": 152.0,
+      "box_mbr_microalgos_per_tx": 95400.0,
+      "cost_algo_per_tx": 0.0964
+    },
+    {
+      "method": "register_evidence",
+      "transactions": 20,
+      "failures": 0,
+      "submit_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "confirm_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "retrieve_ms": {
+        "count": 20,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.001,
+        "p99": 0.001,
+        "max": 0.001
+      },
+      "rounds_to_confirm": {
+        "count": 20,
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1
+      },
+      "fee_microalgos_per_tx": 1000.0,
+      "box_value_bytes": 82.0,
+      "box_mbr_microalgos_per_tx": 49300.0,
+      "cost_algo_per_tx": 0.0503
+    }
+  ],
+  "pipelined": [
+    {
+      "method": "record_event",
+      "submitted": 30,
+      "confirmed": 30,
+      "submit_seconds": 0.0,
+      "total_seconds": 0.0,
+      "throughput_tps": 106183.04
+    },
+    {
+      "method": "report_conflict",
+      "submitted": 30,
+      "confirmed": 30,
+      "submit_seconds": 0.0,
+      "total_seconds": 0.0,
+      "throughput_tps": 85631.83
+    }
+  ],
+  "payload": [
+    {
+      "method": "report_conflict",
+      "transactions": 6,
+      "failures": 0,
+      "submit_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "confirm_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "retrieve_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.001,
+        "p99": 0.001,
+        "max": 0.001
+      },
+      "rounds_to_confirm": {
+        "count": 6,
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1
+      },
+      "fee_microalgos_per_tx": 1000.0,
+      "box_value_bytes": 153.0,
+      "box_mbr_microalgos_per_tx": 95800.0,
+      "cost_algo_per_tx": 0.0968,
+      "reason_bytes": 16
+    },
+    {
+      "method": "report_conflict",
+      "transactions": 6,
+      "failures": 0,
+      "submit_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "confirm_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "retrieve_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.001,
+        "p99": 0.001,
+        "max": 0.001
+      },
+      "rounds_to_confirm": {
+        "count": 6,
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1
+      },
+      "fee_microalgos_per_tx": 1000.0,
+      "box_value_bytes": 201.0,
+      "box_mbr_microalgos_per_tx": 115000.0,
+      "cost_algo_per_tx": 0.116,
+      "reason_bytes": 64
+    },
+    {
+      "method": "report_conflict",
+      "transactions": 6,
+      "failures": 0,
+      "submit_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "confirm_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "retrieve_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.001,
+        "p99": 0.001,
+        "max": 0.001
+      },
+      "rounds_to_confirm": {
+        "count": 6,
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1
+      },
+      "fee_microalgos_per_tx": 1000.0,
+      "box_value_bytes": 393.0,
+      "box_mbr_microalgos_per_tx": 191800.0,
+      "cost_algo_per_tx": 0.1928,
+      "reason_bytes": 256
+    },
+    {
+      "method": "report_conflict",
+      "transactions": 6,
+      "failures": 0,
+      "submit_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "confirm_ms": {
+        "count": 6,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "retrieve_ms": {
+        "count": 6,
+        "mean": 0.001,
+        "p50": 0.001,
+        "p95": 0.001,
+        "p99": 0.001,
+        "max": 0.001
+      },
+      "rounds_to_confirm": {
+        "count": 6,
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "max": 1
+      },
+      "fee_microalgos_per_tx": 1000.0,
+      "box_value_bytes": 1161.0,
+      "box_mbr_microalgos_per_tx": 499000.0,
+      "cost_algo_per_tx": 0.5,
+      "reason_bytes": 1024
+    }
+  ],
+  "reference": "Lau, Liu, Ma & Talluri (2025), IJPR 63(14):5428-5451 - submission, confirmation and retrieval on Algorand."
+}

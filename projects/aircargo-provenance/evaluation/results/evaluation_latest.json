@@ -1,0 +1,458 @@
+{
+  "dataset": {
+    "generator": "evaluation/simulator.py",
+    "seed": 11,
+    "shipments": 300,
+    "conflict_rate": 0.6,
+    "double_rate": 0.1,
+    "invalid_rate": 0.03,
+    "hard_name_rate": 0.05,
+    "records": 3382,
+    "generated_at": "2026-10-27T13:52:58.583140+00:00"
+  },
+  "target": "in-process",
+  "scores": {
+    "per_type": {
+      "STATUS_MISMATCH": {
+        "injected": 18,
+        "detected": 18,
+        "predicted": 18,
+        "true_positive": 18,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "INVALID_TRANSITION": {
+        "injected": 19,
+        "detected": 19,
+        "predicted": 39,
+        "true_positive": 39,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "LOCATION_MISMATCH": {
+        "injected": 20,
+        "detected": 20,
+        "predicted": 90,
+        "true_positive": 90,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "WEIGHT_MISMATCH": {
+        "injected": 13,
+        "detected": 13,
+        "predicted": 26,
+        "true_positive": 26,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "UNIT_MISMATCH": {
+        "injected": 17,
+        "detected": 17,
+        "predicted": 34,
+        "true_positive": 34,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "VOLUME_MISMATCH": {
+        "injected": 18,
+        "detected": 18,
+        "predicted": 36,
+        "true_positive": 36,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "PIECE_COUNT_MISMATCH": {
+        "injected": 15,
+        "detected": 15,
+        "predicted": 30,
+        "true_positive": 30,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "PARTY_MISMATCH": {
+        "injected": 18,
+        "detected": 18,
+        "predicted": 52,
+        "true_positive": 36,
+        "precision": 0.6923,
+        "recall": 1.0,
+        "f1": 0.8182
+      },
+      "ROUTE_MISMATCH": {
+        "injected": 15,
+        "detected": 15,
+        "predicted": 30,
+        "true_positive": 30,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "SPECIAL_HANDLING_MISMATCH": {
+        "injected": 11,
+        "detected": 11,
+        "predicted": 22,
+        "true_positive": 22,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "REFERENCE_MISMATCH": {
+        "injected": 18,
+        "detected": 18,
+        "predicted": 36,
+        "true_positive": 36,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "DUPLICATE_IDENTIFIER": {
+        "injected": 14,
+        "detected": 14,
+        "predicted": 14,
+        "true_positive": 14,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    },
+    "macro": {
+      "precision": 0.9744,
+      "recall": 1.0,
+      "f1": 0.9849
+    },
+    "micro": {
+      "precision": 0.9625,
+      "recall": 1.0,
+      "f1": 0.9809
+    },
+    "classification_accuracy": 1.0,
+    "confusion": {
+      "STATUS_MISMATCH": {
+        "STATUS_MISMATCH": 18
+      },
+      "INVALID_TRANSITION": {
+        "INVALID_TRANSITION": 39
+      },
+      "LOCATION_MISMATCH": {
+        "LOCATION_MISMATCH": 60
+      },
+      "WEIGHT_MISMATCH": {
+        "WEIGHT_MISMATCH": 26,
+        "PARTY_MISMATCH": 2,
+        "VOLUME_MISMATCH": 2,
+        "PIECE_COUNT_MISMATCH": 1
+      },
+      "UNIT_MISMATCH": {
+        "UNIT_MISMATCH": 34,
+        "PARTY_MISMATCH": 3,
+        "VOLUME_MISMATCH": 2,
+        "LOCATION_MISMATCH": 1,
+        "SPECIAL_HANDLING_MISMATCH": 1
+      },
+      "VOLUME_MISMATCH": {
+        "VOLUME_MISMATCH": 36,
+        "UNIT_MISMATCH": 2,
+        "REFERENCE_MISMATCH": 4,
+        "WEIGHT_MISMATCH": 2,
+        "PARTY_MISMATCH": 2
+      },
+      "PIECE_COUNT_MISMATCH": {
+        "PIECE_COUNT_MISMATCH": 30,
+        "REFERENCE_MISMATCH": 2,
+        "WEIGHT_MISMATCH": 1
+      },
+      "PARTY_MISMATCH": {
+        "PARTY_MISMATCH": 36,
+        "WEIGHT_MISMATCH": 2,
+        "UNIT_MISMATCH": 1,
+        "VOLUME_MISMATCH": 2,
+        "SPECIAL_HANDLING_MISMATCH": 2
+      },
+      "ROUTE_MISMATCH": {
+        "ROUTE_MISMATCH": 30,
+        "LOCATION_MISMATCH": 30,
+        "PARTY_MISMATCH": 2
+      },
+      "SPECIAL_HANDLING_MISMATCH": {
+        "SPECIAL_HANDLING_MISMATCH": 22,
+        "UNIT_MISMATCH": 1,
+        "PARTY_MISMATCH": 2
+      },
+      "REFERENCE_MISMATCH": {
+        "REFERENCE_MISMATCH": 36,
+        "VOLUME_MISMATCH": 4,
+        "PIECE_COUNT_MISMATCH": 2
+      },
+      "DUPLICATE_IDENTIFIER": {
+        "DUPLICATE_IDENTIFIER": 14
+      }
+    },
+    "shipments": {
+      "total": 300,
+      "clean": 121,
+      "with_faults": 179,
+      "clean_with_false_alarm": 2,
+      "false_alarm_rate": 0.0165,
+      "faulty_detected": 179,
+      "detection_rate": 1.0,
+      "hard_name_variant_shipments": 11
+    },
+    "filter": {
+      "invalid_sent": 68,
+      "invalid_rejected": 68,
+      "rejection_rate": 1.0,
+      "valid_sent": 3314,
+      "valid_wrongly_rejected": 0,
+      "rejected_by_reason": {
+        "invalid:unknown_status_code": 7,
+        "invalid:event_for_other_shipment": 14,
+        "invalid:missing_unit": 6,
+        "invalid:negative_weight": 5,
+        "invalid:no_timezone": 16,
+        "invalid:bad_location": 9,
+        "invalid:relative_id": 5,
+        "invalid:missing_context": 6
+      }
+    },
+    "false_positive_examples": [
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00267",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00267",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": [
+          "UNIT_MISMATCH"
+        ]
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00243",
+        "description": "Different consignee names (similarity 0.85 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00243",
+        "description": "Different consignee names (similarity 0.85 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00200",
+        "description": "Different consignee names (similarity 0.85 < 0.88).",
+        "touches_injection": [
+          "ROUTE_MISMATCH"
+        ]
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00200",
+        "description": "Different consignee names (similarity 0.85 < 0.88).",
+        "touches_injection": [
+          "ROUTE_MISMATCH"
+        ]
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00173",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00173",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00160",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00160",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00134",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00134",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": [
+          "UNIT_MISMATCH"
+        ]
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00097",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00097",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00068",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      },
+      {
+        "conflict_type": "PARTY_MISMATCH",
+        "severity": "MEDIUM",
+        "shipment_id": "https://aggregator.example/logistics-objects/shp-00068",
+        "description": "Different consignee names (similarity 0.87 < 0.88).",
+        "touches_injection": []
+      }
+    ],
+    "false_positive_count": 16,
+    "totals": {
+      "conflicts": 427,
+      "injections": 196,
+      "detected_injections": 196
+    }
+  },
+  "performance": {
+    "records": 3382,
+    "wall_seconds": 17.38,
+    "throughput_records_per_second": 194.6,
+    "client_latency_ms": {
+      "count": 3382,
+      "mean": 5.137,
+      "p50": 4.897,
+      "p95": 7.327,
+      "p99": 9.066,
+      "max": 58.355
+    },
+    "client_latency_ms_by_kind": {
+      "shipment": {
+        "count": 300,
+        "mean": 4.45,
+        "p50": 4.271,
+        "p95": 6.573,
+        "p99": 7.517,
+        "max": 11.943
+      },
+      "event": {
+        "count": 2167,
+        "mean": 5.084,
+        "p50": 4.84,
+        "p95": 7.085,
+        "p99": 9.133,
+        "max": 58.355
+      },
+      "report": {
+        "count": 915,
+        "mean": 5.489,
+        "p50": 5.264,
+        "p95": 7.769,
+        "p99": 9.214,
+        "max": 11.208
+      }
+    },
+    "server_processing_ms": {
+      "count": 3314,
+      "mean": 2.421,
+      "p50": 2.206,
+      "p95": 3.948,
+      "p99": 5.279,
+      "max": 55.173
+    },
+    "server_processing_ms_by_kind": {
+      "object": {
+        "count": 300,
+        "mean": 1.762,
+        "p50": 1.645,
+        "p95": 2.821,
+        "p99": 3.639,
+        "max": 3.769
+      },
+      "event": {
+        "count": 2110,
+        "mean": 2.379,
+        "p50": 2.158,
+        "p95": 3.735,
+        "p99": 4.989,
+        "max": 55.173
+      },
+      "report": {
+        "count": 904,
+        "mean": 2.738,
+        "p50": 2.522,
+        "p95": 4.548,
+        "p99": 5.6,
+        "max": 8.119
+      }
+    },
+    "chain": {}
+  },
+  "unexpected_status": [],
+  "generated_at": "2026-10-27T13:53:17.100445+00:00",
+  "scaling": [
+    {
+      "shipments": 50,
+      "records": 567,
+      "throughput": 194.06,
+      "p50_ms": 4.886,
+      "p95_ms": 7.309,
+      "server_p50_ms": 2.175,
+      "macro_f1": 1.0
+    },
+    {
+      "shipments": 200,
+      "records": 2252,
+      "throughput": 179.84,
+      "p50_ms": 5.324,
+      "p95_ms": 7.829,
+      "server_p50_ms": 2.397,
+      "macro_f1": 0.9846
+    },
+    {
+      "shipments": 500,
+      "records": 5634,
+      "throughput": 190.1,
+      "p50_ms": 5.058,
+      "p95_ms": 7.363,
+      "server_p50_ms": 2.281,
+      "macro_f1": 0.9855
+    }
+  ]
+}
